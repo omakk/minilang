@@ -9,7 +9,6 @@
     char    *keyword;
     char    *type;
     
-    // Literals
     int     intliteral;
     float   floatliteral;
     char    *strliteral;
