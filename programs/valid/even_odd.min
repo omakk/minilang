@@ -1,0 +1,24 @@
+// Given an integer n, this program will loop and
+// print down the numbers from n to 0 along with whether 
+// it is odd or even
+
+// Declarations
+var n:   int;
+var rem: int;
+
+// Statements
+read n;
+
+while n do
+    rem = n - ( (n/2) * 2);
+    print n;
+    if rem then
+        print "\"even\"\n";     // rem is 0
+    else
+        print "\"odd\"\n";      // rem is 1
+    endif
+    
+    n = n - 1;
+done
+
+print "\nFinished printing...exiting...";
