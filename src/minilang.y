@@ -90,5 +90,5 @@ exp     : IDENTIFIER
 
 void yyerror()
 {
-    printf("Syntax error before %s\n", yytext);
+    printf("INVALID: Syntax error before %s\n", yytext);
 }
