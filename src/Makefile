@@ -1,6 +1,6 @@
 CC = gcc
 
-CFLAGS = -Wall -g -ansi -pedantic
+CFLAGS =  -w -g -ansi -pedantic
 
 UNAME := $(shell uname)
 
@@ -26,4 +26,4 @@ main.o: main.c
 	$(CC) $(CFLAGS) -c main.c
 
 clean:
-	rm *.o lex.yy.c y.tab.c y.tab.h minilang
+	rm -f *.o lex.yy.c y.tab.c y.tab.h minilang; rm -f ../*.log
