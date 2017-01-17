@@ -1,4 +1,5 @@
 %{
+    #include <stdlib.h>
     #include <stdio.h>
     extern char *yytext;
     void yyerror();
@@ -90,4 +91,5 @@ exp     : IDENTIFIER
 void yyerror()
 {
     printf("INVALID: Syntax error before %s\n", yytext);
+    exit(1);
 }
