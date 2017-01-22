@@ -2,39 +2,41 @@
     #include <stdlib.h>
     #include <stdio.h>
     extern char *yytext;
-    void yyerror();
+    extern int yylineno;
+    void yyerror(char const *msg);
 %}
 
 %union
 {
-    char    *keyword;
     char    *type;
-    
-    int     intliteral;
-    float   floatliteral;
-    char    *strliteral;
-    char    *strconst;
+    int     intval;
+    float   floatval;
+    char    *strval;
+    char    *ident;
 }
 
-%token                  COLON           ":"
-%token                  SEMICOLON       ";"
-%token <keyword>        VAR             "var"
-%token <keyword>        WHILE           "while"
-%token <keyword>        DO              "do"
-%token <keyword>        DONE            "done"
-%token <keyword>        IF              "if"
-%token <keyword>        THEN            "then"
-%token <keyword>        ELSE            "else"
-%token <keyword>        ENDIF           "endif"
-%token <keyword>        PRINT           "print"
-%token <keyword>        READ            "read"
-%token <type>           INT             "int"
-%token <type>           FLOAT           "float"
-%token <type>           STRING          "string"
-%token <intliteral>     INTLITERAL
-%token <floatliteral>   FLOATLITERAL
-%token <strliteral>     STRLITERAL
-%token <strconst>       IDENTIFIER
+%define parse.lac full
+%define parse.error verbose
+
+%token  COLON
+%token  SEMICOLON
+%token  VAR
+%token  WHILE
+%token  DO
+%token  DONE
+%token  IF
+%token  THEN
+%token  ELSE
+%token  ENDIF
+%token  PRINT
+%token  READ
+%token <type>      TYPE_INT 
+%token <type>      TYPE_FLOAT          
+%token <type>      TYPE_STRING 
+%token <intval>    INTLITERAL
+%token <floatval>  FLOATLITERAL
+%token <strval>    STRLITERAL
+%token <ident>     IDENTIFIER
 
 %type <type> type
 
@@ -54,9 +56,9 @@ dcls    : dcl dcls
 
 dcl     : VAR IDENTIFIER COLON type SEMICOLON ;
 
-type    : INT      
-        | FLOAT    
-        | STRING   
+type    : TYPE_INT      
+        | TYPE_FLOAT    
+        | TYPE_STRING   
         ;
 
 stmts   : stmt stmts 
@@ -88,8 +90,8 @@ exp     : IDENTIFIER
 
 %%
 
-void yyerror()
+void yyerror(char const *msg)
 {
-    printf("INVALID: Syntax error before %s\n", yytext);
+    fprintf(stderr, "INVALID: %s on line %d\n", msg, yylineno);
     exit(1);
 }
