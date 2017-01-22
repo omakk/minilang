@@ -1,14 +1,17 @@
 CC = gcc
-
 CFLAGS =  -w -g -ansi -pedantic
 
-UNAME := $(shell uname)
+DEBUG ?= 0
+ifeq ($(DEBUG), 1)
+		CFLAGS += -DDEBUG
+endif
 
+UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
-        lib = -lfl
+	lib = -lfl
 endif
 ifeq ($(UNAME), Darwin)
-        lib = -ll
+	lib = -ll
 endif
 
 default: minilang
