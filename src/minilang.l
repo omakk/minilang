@@ -48,14 +48,14 @@ INT     0|[1-9][0-9]*
                               return FLOATLITERAL; 
                             }
 
-\"(\\.|[^\\"])*\"           { /*
-                                Citation for regex:
-                                http://www.lysator.liu.se/c/ANSI-C-grammar-l.html
-                              */
-                              DBG(("tSTRING(%s)\n", yytext));
-                              yylval.strval = strdup(yytext);
-                              return STRLITERAL;
-                             } 
+\"(\\[abfnrtb\"\\]|[^\\"])*\"               { /*
+                                                Citation for regex:
+                                                http://www.lysator.liu.se/c/ANSI-C-grammar-l.html
+                                              */
+                                            DBG(("tSTRING(%s)\n", yytext));
+                                            yylval.strval = strdup(yytext);
+                                            return STRLITERAL;
+                                            } 
 
 ";"                         { DBG(("tSEMICOLON(%s)\n", yytext)); return SEMICOLON; }
 ":"                         { DBG(("tCOLON(%s)\n", yytext)); return COLON; }
