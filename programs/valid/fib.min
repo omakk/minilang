@@ -1,0 +1,19 @@
+// Given an interger n, read from stdin, compute the fibonacci series
+// until n
+
+var a: int;
+var b: int;
+var n: int;
+
+read n;
+a = 0;
+b = 1;
+
+print "Fib series:";
+while n do
+    print a;
+    a = b;
+    b = a+ b;
+done
+
+print "Done\n";

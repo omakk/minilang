@@ -1,0 +1,7 @@
+// Here we have an example of executing statements before delcartions
+
+print "Lol this is going to fail";
+
+var l: string;
+
+l = "I ain't getting anything";

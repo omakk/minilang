@@ -1,0 +1,7 @@
+// Sadly we cannot use single quotes for neither strings or characters
+
+var x : string;
+
+x = 'lolimastring';
+
+print x ;

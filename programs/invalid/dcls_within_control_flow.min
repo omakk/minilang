@@ -1,0 +1,28 @@
+// You cannot declare any variables within a control flow statements like 
+// "while do done" or "if then else endif"
+
+var str: string;
+var n: int;
+
+str = "This is fine";
+
+if str then
+    str = str + 1;
+endif
+// Syntactically correct
+
+read n;
+if n then
+    n  = n + 1;
+else
+    n = n - 1;
+endif
+// Still syntactically correct
+
+while (str + n) do
+    var x: int;
+    // No man you can't do that!
+    str = str + x + n;
+done
+
+print "Pheww....\tlol\n"; 

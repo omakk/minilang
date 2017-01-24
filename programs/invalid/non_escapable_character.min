@@ -1,0 +1,6 @@
+var str: string;
+
+str = "You can\'t escape\\\n\t\tfrom me\!";
+// Oh but I can
+
+print str;
