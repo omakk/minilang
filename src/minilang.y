@@ -67,9 +67,7 @@ stmts   : stmt stmts
 
 stmt    : READ IDENTIFIER SEMICOLON
         | PRINT exp SEMICOLON
-        | PRINT STRLITERAL SEMICOLON
         | IDENTIFIER '=' exp SEMICOLON
-        | IDENTIFIER '=' STRLITERAL SEMICOLON
         | IF exp THEN stmts ifend ENDIF
         | WHILE exp DO stmts DONE
         ;
@@ -80,6 +78,7 @@ ifend   : ELSE stmts
 exp     : IDENTIFIER
         | INTLITERAL
         | FLOATLITERAL
+        | STRLITERAL
         | exp '+' exp
         | exp '-' exp
         | exp '*' exp
