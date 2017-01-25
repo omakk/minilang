@@ -1,7 +1,0 @@
-// Unlike Python, you cannot have a string invovled in a multiplcaion operaion with an int
-
-var n: int;
-
-read n;
-
-print "lol" * n;

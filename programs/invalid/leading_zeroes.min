@@ -1,0 +1,15 @@
+// Leading zeroes are disallowed in minilang but trailing zeroes are fine
+
+var v: int;
+var w: int;
+var x: float;
+var y: float;
+var z: float;
+
+v = 10;
+w = 0;
+x = 0.0;
+y = 0.1000;
+z = 010.1000; // Should find an error here
+
+print w + x + y + z;
