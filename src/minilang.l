@@ -48,7 +48,7 @@ INT     0|[1-9][0-9]*
                               return FLOATLITERAL; 
                             }
 
-\"(\\[abfnrtb\"\\]|[^\\"])*\"               { /*
+\"(\\[abfnrtvb\"\\]|[^\\"])*\"               { /*
                                                 Citation for regex:
                                                 http://www.lysator.liu.se/c/ANSI-C-grammar-l.html
                                               */
