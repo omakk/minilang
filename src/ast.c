@@ -41,6 +41,14 @@ ASTNode *make_ast_node_floatlit (float f)
         return node;
 }
 
+ASTNode *make_ast_node_parenexp (ASTNode *e)
+{
+        ASTNode *node        = (ASTNode *) malloc(sizeof(ASTNode));
+        node->construct      = CON_PAREN_EXP;
+        node->val.parenexp.e = e;
+        return node;
+}
+
 ASTNode *make_ast_node_print (ASTNode *e)
 {
         ASTNode *node        = (ASTNode *) malloc(sizeof(ASTNode));
@@ -72,6 +80,15 @@ ASTNode *make_ast_node_assign (char *id, ASTNode *e)
         node->construct        = CON_ASSIGN;
         node->val.assign.idval = id;
         node->val.assign.e     = e;
+        return node;
+}
+
+ASTNode *make_ast_node_prog (ASTNode *dcls, ASTNode *stmts)
+{
+        ASTNode *node          = (ASTNode *) malloc(sizeof(ASTNode));
+        node->construct        = CON_PROGRAM;
+        node->val.prog.dcls    = dcls;
+        node->val.prog.stmts = stmts;
         return node;
 }
 
