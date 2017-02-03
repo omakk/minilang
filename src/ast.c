@@ -49,6 +49,14 @@ ASTNode *make_ast_node_print (ASTNode *e)
         return node;
 }
 
+ASTNode *make_ast_node_minusuop (ASTNode *e)
+{
+        ASTNode *node      = (ASTNode *) malloc(sizeof(ASTNode));
+        node->construct    = CON_UOP_MINUS;
+        node->val.printexp = e;
+        return node;
+}
+
 ASTNode *make_ast_node_decl (char *id, char *type)
 {
         ASTNode *node        = (ASTNode *) malloc(sizeof(ASTNode));

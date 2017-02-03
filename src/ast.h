@@ -2,10 +2,10 @@
 #define AST_H
 
 enum ast_construct { 
-                     CON_IDENT,   CON_FLOATLIT, CON_INTLIT, CON_STRLIT,
-                     CON_OP_PLUS, CON_OP_MINUS, CON_OP_MUL, CON_OP_DIV,
-                     CON_IF,      CON_IF_ELSE,  CON_WHILE,  CON_READ, 
-                     CON_PRINT,   CON_DECL,     CON_ASSIGN
+                     CON_IDENT,     CON_FLOATLIT,  CON_INTLIT,  CON_STRLIT,
+                     CON_BOP_PLUS,  CON_BOP_MINUS, CON_BOP_MUL, CON_BOP_DIV,
+                     CON_UOP_MINUS, CON_IF,        CON_IF_ELSE, CON_WHILE,
+                     CON_READ,      CON_PRINT,     CON_DECL,    CON_ASSIGN
                    };
 
 typedef struct ASTNode {
@@ -15,13 +15,14 @@ typedef struct ASTNode {
                int     intval;
                float floatval;
                char   *strval;
-               struct { struct ASTNode *exp } printexp;
+               struct { struct ASTNode *e } printexp;
+               struct { struct ASTNode *e } minusuop; 
                struct { char *idval; char *type } decl;
                struct { char *idval; ASTNode *e } assign;
-               struct { struct ASTNode *left; struct ASTNode *right } mulop;
-               struct { struct ASTNode *left; struct ASTNode *right } divop; 
-               struct { struct ASTNode *left; struct ASTNode *right } plusop; 
-               struct { struct ASTNode *left; struct ASTNode *right } minusop; 
+               struct { struct ASTNode *left; struct ASTNode *right } mulbop;
+               struct { struct ASTNode *left; struct ASTNode *right } divbop; 
+               struct { struct ASTNode *left; struct ASTNode *right } plusbop; 
+               struct { struct ASTNode *left; struct ASTNode *right } minusbop; 
                struct { struct ASTNode *cond; struct ASTNode *while_body } whilebranch;
                struct { struct ASTNode *cond; struct ASTNode *if_body } ifbranch;
                struct { struct ASTNode *cond; struct ASTNode *if_body; struct ASTNode *else_body } ifelsebranch;
@@ -34,12 +35,13 @@ ASTNode *make_ast_node_strlit       ( char    *s                                
 ASTNode *make_ast_node_intlit       ( int      i                                          );
 ASTNode *make_ast_node_floatlit     ( float    f                                          );
 ASTNode *make_ast_node_print        ( ASTNode *e                                          );
+ASTNode *make_ast_node_minusuop     ( ASTNode *e                                          );
 ASTNode *make_ast_node_decl         ( char    *id,   char    *type                        );
 ASTNode *make_ast_node_assign       ( char    *id,   ASTNode *e                           );
-ASTNode *make_ast_node_mulop        ( ASTNode *l,    ASTNode *r                           );
-ASTNode *make_ast_node_divlop       ( ASTNode *l,    ASTNode *r                           );
-ASTNode *make_ast_node_plusop       ( ASTNode *l,    ASTNode *r                           );
-ASTNode *make_ast_node_minusop      ( ASTNode *l,    ASTNode *r                           );
+ASTNode *make_ast_node_mulbop       ( ASTNode *l,    ASTNode *r                           );
+ASTNode *make_ast_node_divlbop      ( ASTNode *l,    ASTNode *r                           );
+ASTNode *make_ast_node_plusbop      ( ASTNode *l,    ASTNode *r                           );
+ASTNode *make_ast_node_minusbop     ( ASTNode *l,    ASTNode *r                           );
 ASTNode *make_ast_node_whilebranch  ( ASTNode *cond, ASTNode *while_body                  );
 ASTNode *make_ast_node_ifbranch     ( ASTNode *cond, ASTNode *if_body                     );
 ASTNode *make_ast_node_ifelsebranch ( ASTNode *cond, ASTNode *if_body, ASTNode *else_body );
