@@ -23,6 +23,10 @@ void pretty_print(ASTNode *tree)
                         break;
                 case CON_BOP_MINUS:
                         break;
+                case CON_PAREN_EXP:
+                        break;
+                case CON_PROGRAM:
+                        break;
                 case CON_READ:
                         break;
                 case CON_PRINT:
@@ -38,7 +42,7 @@ void pretty_print(ASTNode *tree)
                 case CON_WHILE:
                         break;
                 default:
-                        printf("Somethign went wrong!\n");
+                        printf("Something went wrong!\n");
                         break;
         }
 }
