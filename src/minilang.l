@@ -37,25 +37,21 @@ INT     0|[1-9][0-9]*
 
 {IDENT}                     { DBG(("tIDENT(%s)\n", yytext));
                               yylval.ident = strdup(yytext);
-                              return IDENTIFIER;
-                            } 
+                              return IDENTIFIER; } 
 {INT}                       { DBG(("tINT(%s)\n", yytext));
                               yylval.intval = atoi(yytext);
-                              return INTLITERAL;
-                            } 
+                              return INTLITERAL; } 
 ({INT}\.{DIGIT}+)           { DBG(("tFLOAT(%s)\n", yytext)); 
                               yylval.floatval = atof(yytext);
-                              return FLOATLITERAL; 
-                            }
+                              return FLOATLITERAL; }
 
 \"(\\[abfnrtvb\"\\]|[^\\"])*\"               { /*
                                                 Citation for regex:
                                                 http://www.lysator.liu.se/c/ANSI-C-grammar-l.html
                                               */
-                                            DBG(("tSTRING(%s)\n", yytext));
-                                            yylval.strval = strdup(yytext);
-                                            return STRLITERAL;
-                                            } 
+                                                DBG(("tSTRING(%s)\n", yytext));
+                                                yylval.strval = strdup(yytext);
+                                                return STRLITERAL; } 
 
 ";"                         { DBG(("tSEMICOLON(%s)\n", yytext)); return SEMICOLON; }
 ":"                         { DBG(("tCOLON(%s)\n", yytext)); return COLON; }
