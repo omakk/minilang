@@ -16,14 +16,17 @@ endif
 
 default: minilang
 
-minilang: y.tab.o lex.yy.o main.o
-	$(CC) $(CFLAGS) y.tab.o lex.yy.o main.o -o minilang $(lib)
+minilang: ast.o y.tab.o lex.yy.o main.o
+	$(CC) $(CFLAGS) ast.o y.tab.o lex.yy.o main.o -o minilang $(lib)
 
 y.tab.c: minilang.y
 	bison --yacc --defines minilang.y
 
 lex.yy.c: minilang.l
 	flex minilang.l
+
+ast.o: ast.c
+	$(CC) $(CFLAGS) -c ast.c
 
 main.o: main.c
 	$(CC) $(CFLAGS) -c main.c
