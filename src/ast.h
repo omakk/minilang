@@ -28,20 +28,20 @@ typedef struct ASTNode {
               } val;
 } ASTNode;
 
-ASTNode *make_ast_node_ident        ( char *id );
-ASTNode *make_ast_node_read         ( char *id );
-ASTNode *make_ast_node_strlit       ( char *s );
-ASTNode *make_ast_node_intlit       ( int i );
-ASTNode *make_ast_node_floatlit     ( float f );
-ASTNode *make_Ast_node_print        ( ASTNode *e );
-ASTNode *make_ast_node_decl         ( char *id, char *type );
-ASTNode *make_ast_node_assign       ( char *id, ASTNode *e );
-ASTNode *make_ast_node_mulop        ( ASTNode *l, ASTNode *r );
-ASTNode *make_ast_node_divlop       ( ASTNode *l, ASTNode *r );
-ASTNode *make_ast_node_plusop       ( ASTNode *l, ASTNode *r );
-ASTNode *make_ast_node_minusop      ( ASTNode *l, ASTNode *r );
-ASTNode *make_ast_node_whilebranch  ( ASTNode *cond, ASTNode *while_body);
-ASTNode *make_ast_node_ifbranch     ( ASTNode *cond, ASTNode *if_body );
-ASTNode *make_ast_node_ifelsebranch ( ASTNode *cond, ASTNode *if_body, ASTNode *else_body);
+ASTNode *make_ast_node_ident        ( char    *id                                         );
+ASTNode *make_ast_node_read         ( char    *id                                         );
+ASTNode *make_ast_node_strlit       ( char    *s                                          );
+ASTNode *make_ast_node_intlit       ( int      i                                          );
+ASTNode *make_ast_node_floatlit     ( float    f                                          );
+ASTNode *make_ast_node_print        ( ASTNode *e                                          );
+ASTNode *make_ast_node_decl         ( char    *id,   char    *type                        );
+ASTNode *make_ast_node_assign       ( char    *id,   ASTNode *e                           );
+ASTNode *make_ast_node_mulop        ( ASTNode *l,    ASTNode *r                           );
+ASTNode *make_ast_node_divlop       ( ASTNode *l,    ASTNode *r                           );
+ASTNode *make_ast_node_plusop       ( ASTNode *l,    ASTNode *r                           );
+ASTNode *make_ast_node_minusop      ( ASTNode *l,    ASTNode *r                           );
+ASTNode *make_ast_node_whilebranch  ( ASTNode *cond, ASTNode *while_body                  );
+ASTNode *make_ast_node_ifbranch     ( ASTNode *cond, ASTNode *if_body                     );
+ASTNode *make_ast_node_ifelsebranch ( ASTNode *cond, ASTNode *if_body, ASTNode *else_body );
 
 #endif

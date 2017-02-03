@@ -1,6 +1,7 @@
 %{
     #include <stdlib.h>
     #include <stdio.h>
+    #include "ast.h"
     extern char *yytext;
     extern int yylineno;
     void yyerror(char const *msg);
@@ -13,6 +14,7 @@
     float   floatval;
     char    *strval;
     char    *ident;
+    ASTNode *node;
 }
 
 %define parse.lac full
@@ -39,6 +41,7 @@
 %token <ident>     IDENTIFIER
 
 %type <type> type
+%type <node> program dcls dcl stmts stmt exp
 
 %start program
 
@@ -68,12 +71,10 @@ stmts   : stmt stmts
 stmt    : READ IDENTIFIER SEMICOLON
         | PRINT exp SEMICOLON
         | IDENTIFIER '=' exp SEMICOLON
-        | IF exp THEN stmts ifend ENDIF
+        | IF exp THEN stmts ENDIF
+        | IF exp THEN stmts ELSE stmts ENDIF
         | WHILE exp DO stmts DONE
         ;
-
-ifend   : ELSE stmts
-        | %empty
 
 exp     : IDENTIFIER
         | INTLITERAL
