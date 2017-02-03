@@ -43,17 +43,17 @@ ASTNode *make_ast_node_floatlit (float f)
 
 ASTNode *make_ast_node_print (ASTNode *e)
 {
-        ASTNode *node      = (ASTNode *) malloc(sizeof(ASTNode));
-        node->construct    = CON_PRINT;
-        node->val.printexp = e;
+        ASTNode *node        = (ASTNode *) malloc(sizeof(ASTNode));
+        node->construct      = CON_PRINT;
+        node->val.printexp.e = e;
         return node;
 }
 
 ASTNode *make_ast_node_minusuop (ASTNode *e)
 {
-        ASTNode *node      = (ASTNode *) malloc(sizeof(ASTNode));
-        node->construct    = CON_UOP_MINUS;
-        node->val.printexp = e;
+        ASTNode *node         = (ASTNode *) malloc(sizeof(ASTNode));
+        node->construct       = CON_UOP_MINUS;
+        node->val.minusuop.e  = e;
         return node;
 }
 
@@ -75,42 +75,42 @@ ASTNode *make_ast_node_assign (char *id, ASTNode *e)
         return node;
 }
 
-ASTNode *make_ast_node_mulop (ASTNode *l, ASTNode *r)
-{
-        ASTNode *node         = (ASTNode *) malloc(sizeof(ASTNode));
-        node->construct       = CON_OP_MUL;
-        node->val.mulop.left  = l;
-        node->val.mulop.right = r;
-        return node;
-}
-
-
-ASTNode *make_ast_node_divop (ASTNode *l, ASTNode *r)
-{
-        ASTNode *node         = (ASTNode *) malloc(sizeof(ASTNode));
-        node->construct       = CON_OP_DIV;
-        node->val.divop.left  = l;
-        node->val.divop.right = r;
-        return node;
-}
-
-
-ASTNode *make_ast_node_plusop (ASTNode *l, ASTNode *r)
+ASTNode *make_ast_node_mulbop (ASTNode *l, ASTNode *r)
 {
         ASTNode *node          = (ASTNode *) malloc(sizeof(ASTNode));
-        node->construct        = CON_OP_PLUS;
-        node->val.plusop.left  = l;
-        node->val.plusop.right = r;
+        node->construct        = CON_BOP_MUL;
+        node->val.mulbop.left  = l;
+        node->val.mulbop.right = r;
         return node;
 }
 
 
-ASTNode *make_ast_node_minusop (ASTNode *l, ASTNode *r)
+ASTNode *make_ast_node_divbop (ASTNode *l, ASTNode *r)
+{
+        ASTNode *node          = (ASTNode *) malloc(sizeof(ASTNode));
+        node->construct        = CON_BOP_DIV;
+        node->val.divbop.left  = l;
+        node->val.divbop.right = r;
+        return node;
+}
+
+
+ASTNode *make_ast_node_plusbop (ASTNode *l, ASTNode *r)
 {
         ASTNode *node           = (ASTNode *) malloc(sizeof(ASTNode));
-        node->construct         = CON_OP_MINUS;
-        node->val.minusop.left  = l;
-        node->val.minusop.right = r;
+        node->construct         = CON_BOP_PLUS;
+        node->val.plusbop.left  = l;
+        node->val.plusbop.right = r;
+        return node;
+}
+
+
+ASTNode *make_ast_node_minusbop (ASTNode *l, ASTNode *r)
+{
+        ASTNode *node           = (ASTNode *) malloc(sizeof(ASTNode));
+        node->construct         = CON_BOP_MINUS;
+        node->val.minusbop.left  = l;
+        node->val.minusbop.right = r;
         return node;
 }
 
@@ -134,10 +134,10 @@ ASTNode *make_ast_node_ifbranch (ASTNode *cond, ASTNode *if_body)
 
 ASTNode *make_ast_node_ifelsebranch (ASTNode *cond, ASTNode *if_body, ASTNode *else_body)
 {
-        ASTNode *node                = (ASTNode *) malloc(sizeof(ASTNode));
-        node->construct              = CON_IF_ELSE;
-        node->val.ifbranch.cond      = cond;
-        node->val.ifbranch.if_body   = if_body;
-        node->val.ifbranch.else_body = else_body;
+        ASTNode *node                    = (ASTNode *) malloc(sizeof(ASTNode));
+        node->construct                  = CON_IF_ELSE;
+        node->val.ifelsebranch.cond      = cond;
+        node->val.ifelsebranch.if_body   = if_body;
+        node->val.ifelsebranch.else_body = else_body;
         return node;
 }

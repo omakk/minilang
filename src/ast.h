@@ -15,17 +15,17 @@ typedef struct ASTNode {
                int     intval;
                float floatval;
                char   *strval;
-               struct { struct ASTNode *e } printexp;
-               struct { struct ASTNode *e } minusuop; 
-               struct { char *idval; char *type } decl;
-               struct { char *idval; ASTNode *e } assign;
-               struct { struct ASTNode *left; struct ASTNode *right } mulbop;
-               struct { struct ASTNode *left; struct ASTNode *right } divbop; 
-               struct { struct ASTNode *left; struct ASTNode *right } plusbop; 
-               struct { struct ASTNode *left; struct ASTNode *right } minusbop; 
-               struct { struct ASTNode *cond; struct ASTNode *while_body } whilebranch;
-               struct { struct ASTNode *cond; struct ASTNode *if_body } ifbranch;
-               struct { struct ASTNode *cond; struct ASTNode *if_body; struct ASTNode *else_body } ifelsebranch;
+               struct { struct ASTNode *e; } printexp;
+               struct { struct ASTNode *e; } minusuop; 
+               struct { char *idval; char *type; } decl;
+               struct { char *idval; struct ASTNode *e; } assign;
+               struct { struct ASTNode *left; struct ASTNode *right; } mulbop;
+               struct { struct ASTNode *left; struct ASTNode *right; } divbop; 
+               struct { struct ASTNode *left; struct ASTNode *right; } plusbop; 
+               struct { struct ASTNode *left; struct ASTNode *right; } minusbop; 
+               struct { struct ASTNode *cond; struct ASTNode *while_body; } whilebranch;
+               struct { struct ASTNode *cond; struct ASTNode *if_body; } ifbranch;
+               struct { struct ASTNode *cond; struct ASTNode *if_body; struct ASTNode *else_body; } ifelsebranch;
               } val;
 } ASTNode;
 
