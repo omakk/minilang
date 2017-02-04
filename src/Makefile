@@ -16,8 +16,8 @@ endif
 
 default: minilang
 
-minilang: ast.o y.tab.o lex.yy.o main.o
-	$(CC) $(CFLAGS) ast.o y.tab.o lex.yy.o main.o -o minilang $(lib)
+minilang: pretty.o ast.o y.tab.o lex.yy.o main.o
+	$(CC) $(CFLAGS) pretty.o ast.o y.tab.o lex.yy.o main.o -o minilang $(lib)
 
 y.tab.c: minilang.y
 	bison --yacc --defines minilang.y
@@ -30,6 +30,9 @@ ast.o: ast.c
 
 main.o: main.c
 	$(CC) $(CFLAGS) -c main.c
+
+pretty.o: pretty.c
+	$(CC) $(CFLAGS) -c pretty.c
 
 clean:
 	rm -f *.o lex.yy.c y.tab.c y.tab.h minilang; rm -f ../*.log
