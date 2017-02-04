@@ -50,7 +50,7 @@
 
 %left '+' '-'
 %left '*' '/'
-%precedence NEG
+%left NEG
 
 %%
 
@@ -59,7 +59,9 @@ program : dcls stmts
         ;
 
 dcls    : dcl dcls
+          { $$ = make_ast_node_dcls($1, $2); }
         | %empty
+          { $$ = NULL; }
         ;
 
 dcl     : VAR IDENTIFIER COLON type SEMICOLON
@@ -72,7 +74,9 @@ type    : TYPE_INT
         ;
 
 stmts   : stmt stmts 
+          { $$ = make_ast_node_stmts($1, $2); }
         | %empty
+          { $$ = NULL; }
         ;
 
 stmt    : READ IDENTIFIER SEMICOLON
