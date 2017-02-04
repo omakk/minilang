@@ -6,21 +6,28 @@ enum ast_construct {
                      CON_BOP_PLUS,  CON_BOP_MINUS, CON_BOP_MUL, CON_BOP_DIV,
                      CON_UOP_MINUS, CON_IF,        CON_IF_ELSE, CON_WHILE,
                      CON_READ,      CON_PRINT,     CON_DECL,    CON_ASSIGN,
-                     CON_PAREN_EXP, CON_PROGRAM
+                     CON_PAREN_EXP, CON_PROGRAM,   CON_DCLS,    CON_STMTS
                    };
 
 typedef struct ASTNode {
         enum ast_construct construct;
         union {
+               // Leaf
                char    *idval;
                int     intval;
                float floatval;
                char   *strval;
+               
+               // One subtree
                struct { struct ASTNode *e; } parenexp;
                struct { struct ASTNode *e; } printexp;
                struct { struct ASTNode *e; } minusuop; 
+
+               // Two subtrees
                struct { char *idval; char *type; } decl;
                struct { char *idval; struct ASTNode *e; } assign;
+               struct { struct ASTNode *dcl;  struct ASTNode *dcls } dcls;
+               struct { struct ASTNode *stmt; struct ASTNode *stmts } stmts;
                struct { struct ASTNode *dcls; struct ASTNode *stmts; } prog;
                struct { struct ASTNode *left; struct ASTNode *right; } mulbop;
                struct { struct ASTNode *left; struct ASTNode *right; } divbop; 
@@ -28,6 +35,8 @@ typedef struct ASTNode {
                struct { struct ASTNode *left; struct ASTNode *right; } minusbop; 
                struct { struct ASTNode *cond; struct ASTNode *while_body; } whilebranch;
                struct { struct ASTNode *cond; struct ASTNode *if_body; } ifbranch;
+
+               // Three subtrees
                struct { struct ASTNode *cond; struct ASTNode *if_body; struct ASTNode *else_body; } ifelsebranch;
               } val;
 } ASTNode;
@@ -43,6 +52,8 @@ ASTNode *make_ast_node_minusuop     ( ASTNode *e                                
 ASTNode *make_ast_node_decl         ( char    *id,   char    *type                        );
 ASTNode *make_ast_node_assign       ( char    *id,   ASTNode *e                           );
 ASTNode *make_ast_node_prog         ( ASTNode *dcls, ASTNode *stmts                       );
+ASTNode *make_ast_node_dcls         ( ASTNode *dcl,  ASTNode *dcls                        );
+ASTNode *make_ast_node_stmts        ( ASTNode *stmt, ASTNode *stmts                       );
 ASTNode *make_ast_node_mulbop       ( ASTNode *l,    ASTNode *r                           );
 ASTNode *make_ast_node_divlbop      ( ASTNode *l,    ASTNode *r                           );
 ASTNode *make_ast_node_plusbop      ( ASTNode *l,    ASTNode *r                           );

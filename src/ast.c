@@ -88,7 +88,25 @@ ASTNode *make_ast_node_prog (ASTNode *dcls, ASTNode *stmts)
         ASTNode *node          = (ASTNode *) malloc(sizeof(ASTNode));
         node->construct        = CON_PROGRAM;
         node->val.prog.dcls    = dcls;
-        node->val.prog.stmts = stmts;
+        node->val.prog.stmts   = stmts;
+        return node;
+}
+
+ASTNode *make_ast_node_dcls (ASTNode *dcl, ASTNode *dcls)
+{
+        ASTNode *node          = (ASTNode *) malloc(sizeof(ASTNode));
+        node->construct        = CON_DCLS;
+        node->val.dcls.dcl     = dcl;
+        node->val.dcls.dcls    = dcls;
+        return node;
+}
+
+ASTNode *make_ast_node_stmts (ASTNode *stmt, ASTNode *stmts)
+{
+        ASTNode *node           = (ASTNode *) malloc(sizeof(ASTNode));
+        node->construct         = CON_STMTS;
+        node->val.stmts.stmt    = stmt;
+        node->val.stmts.stmts   = stmts;
         return node;
 }
 
