@@ -5,7 +5,7 @@
 # You *MUST* replace the following command with the
 # command for invoking your compiler.
  
-./src/minilang < "$1"
+./src/minilang "$1"
 
 # For example, if you produce a flex/bison binary file
 # "minic" in the src directory, you can invoke it using
