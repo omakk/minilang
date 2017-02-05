@@ -1,6 +1,8 @@
 #include "pretty.h"
 
-void pretty_print(FILE *f, ASTNode *tree)
+#define TAB_SIZE 4
+
+void pretty_print(FILE *f, ASTNode *tree, int indent)
 {
         switch (tree->construct)
         {
@@ -17,106 +19,101 @@ void pretty_print(FILE *f, ASTNode *tree)
                         fprintf(f, "%f", tree->val.floatval);
                         break;
                 case CON_UOP_MINUS:
-                        fprintf(f, "-");
                         fprintf(f, "(");
-                        pretty_print(f, tree->val.minusuop.e);
+                        fprintf(f, "-");
+                        pretty_print(f, tree->val.minusuop.e, indent);
                         fprintf(f, ")");
                         break;
                 case CON_BOP_MUL:
                         fprintf(f, "(");
-                        pretty_print(f, tree->val.mulbop.left);
+                        pretty_print(f, tree->val.mulbop.left, indent);
                         fprintf(f, "*");
-                        pretty_print(f, tree->val.mulbop.right);
+                        pretty_print(f, tree->val.mulbop.right, indent);
                         fprintf(f, ")");
                         break;
                 case CON_BOP_DIV:
                         fprintf(f, "(");
-                        pretty_print(f, tree->val.divbop.left);
+                        pretty_print(f, tree->val.divbop.left, indent);
                         fprintf(f, "/");
-                        pretty_print(f, tree->val.divbop.right);
+                        pretty_print(f, tree->val.divbop.right, indent);
                         fprintf(f, ")");
                         break;
                 case CON_BOP_PLUS:
                         fprintf(f, "(");
-                        pretty_print(f, tree->val.plusbop.left);
+                        pretty_print(f, tree->val.plusbop.left, indent);
                         fprintf(f, "+");
-                        pretty_print(f, tree->val.plusbop.right);
+                        pretty_print(f, tree->val.plusbop.right, indent);
                         fprintf(f, ")");
                         break;
                 case CON_BOP_MINUS:
                         fprintf(f, "(");
-                        pretty_print(f, tree->val.minusbop.left);
+                        pretty_print(f, tree->val.minusbop.left, indent);
                         fprintf(f, "-");
-                        pretty_print(f, tree->val.minusbop.right);
+                        pretty_print(f, tree->val.minusbop.right, indent);
                         fprintf(f, ")");
                         break;
                 case CON_PAREN_EXP:
                         fprintf(f, "(");
-                        pretty_print(f, tree->val.parenexp.e);
+                        pretty_print(f, tree->val.parenexp.e, indent);
                         fprintf(f, ")");
                         break;
                 case CON_PROGRAM:
-                        if (tree->val.prog.dcls  != NULL) pretty_print(f, tree->val.prog.dcls);
-                        fprintf(f, "\n");
-                        if (tree->val.prog.stmts != NULL) pretty_print(f, tree->val.prog.stmts);
+                        if (tree->val.prog.dcls  != NULL)  pretty_print(f, tree->val.prog.dcls,  indent);
+                        if (tree->val.prog.stmts != NULL)  pretty_print(f, tree->val.prog.stmts, indent);
                         break;
                 case CON_DCLS:
-                        if (tree->val.dcls.dcl != NULL)   pretty_print(f, tree->val.dcls.dcl);
-                        if (tree->val.dcls.dcls != NULL)  pretty_print(f, tree->val.dcls.dcls);
+                        pretty_print(f, tree->val.dcls.dcl,  indent);
+                        if (tree->val.dcls.dcls != NULL)   pretty_print(f, tree->val.dcls.dcls, indent);
                         break;
                 case CON_STMTS:
-                        if (tree->val.stmts.stmt != NULL)   pretty_print(f, tree->val.stmts.stmt);
-                        if (tree->val.stmts.stmts != NULL)  pretty_print(f, tree->val.stmts.stmts);
+                        pretty_print(f, tree->val.stmts.stmt,  indent);
+                        if (tree->val.stmts.stmts != NULL) pretty_print(f, tree->val.stmts.stmts, indent);
                         break;
                 case CON_READ:
-                        fprintf(f, "read %s;\n", tree->val.idval);
+                        fprintf(f, "%*sread %s;\n", indent, "", tree->val.idval);
                         break;
                 case CON_PRINT:
-                        fprintf(f, "print");
-                        fprintf(f, " (");
-                        pretty_print(f, tree->val.printexp.e);
-                        fprintf(f, ");\n");
+                        fprintf(f, "%*sprint ", indent, "");
+                        pretty_print(f, tree->val.printexp.e, indent);
+                        fprintf(f, ";\n");
                         break;
                 case CON_DECL:
                         fprintf(f, "var %s: %s;\n", tree->val.decl.idval, tree->val.decl.type);
                         break;
                 case CON_ASSIGN:
-                        fprintf(f, "%s = (", tree->val.assign.idval);
-                        pretty_print(f, tree->val.assign.e);
-                        fprintf(f, ");\n");
+                        fprintf(f, "%*s%s = ", indent, "", tree->val.assign.idval);
+                        pretty_print(f, tree->val.assign.e, indent);
+                        fprintf(f, ";\n");
                         break;
                 case CON_IF:
-                        fprintf(f, "if");
-                        fprintf(f, " (");
-                        pretty_print(f, tree->val.ifbranch.cond);
-                        fprintf(f, ") ");
-                        fprintf(f, "then\n\t");
-                        pretty_print(f, tree->val.ifbranch.if_body);
-                        fprintf(f, "\nendif\n");
+                        fprintf(f, "%*sif ", indent, "");
+                        pretty_print(f, tree->val.ifbranch.cond, indent);
+                        fprintf(f, " then\n");
+                        if (tree->val.ifbranch.if_body != NULL)
+                                pretty_print(f, tree->val.ifbranch.if_body, indent + TAB_SIZE);
+                        fprintf(f, "%*sendif\n", indent, "");
                         break;
                 case CON_IF_ELSE:
-                        fprintf(f, "if");
-                        fprintf(f, " (");
-                        pretty_print(f, tree->val.ifelsebranch.cond);
-                        fprintf(f, ") ");
-                        fprintf(f, "then\n\t");
-                        pretty_print(f, tree->val.ifelsebranch.if_body);
-                        fprintf(f, "\n");
-                        fprintf(f, "else\n\t");
-                        pretty_print(f, tree->val.ifelsebranch.else_body);
-                        fprintf(f, "\nendif\n");
+                        fprintf(f, "%*sif ", indent, "");
+                        pretty_print(f, tree->val.ifelsebranch.cond, indent);
+                        fprintf(f, " then\n");
+                        if (tree->val.ifelsebranch.if_body != NULL)
+                                pretty_print(f, tree->val.ifelsebranch.if_body,   indent + TAB_SIZE);
+                        fprintf(f, "%*selse\n", indent, "");
+                        if (tree->val.ifelsebranch.else_body != NULL)
+                                pretty_print(f, tree->val.ifelsebranch.else_body, indent + TAB_SIZE);
+                        fprintf(f, "%*sendif\n", indent, "");
                         break;
                 case CON_WHILE:
-                        fprintf(f, "while");
-                        fprintf(f, " (");
-                        pretty_print(f, tree->val.whilebranch.cond);
-                        fprintf(f, ") ");
-                        fprintf(f, "do\n\t");
-                        pretty_print(f, tree->val.whilebranch.while_body);
-                        fprintf(f, "\ndone\n");
+                        fprintf(f, "%*swhile ", indent, "");
+                        pretty_print(f, tree->val.whilebranch.cond, indent);
+                        fprintf(f, " do\n");
+                        if (tree->val.whilebranch.while_body != NULL) 
+                                pretty_print(f, tree->val.whilebranch.while_body, indent + TAB_SIZE);
+                        fprintf(f, "%*sdone\n", indent, "");
                         break;
                 default:
-                        fprintf(f, "Something went wrong!\n");
+                        fprintf(f, "Something went horribly wrong!\n");
                         break;
         }
 }
