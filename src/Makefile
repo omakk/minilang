@@ -35,4 +35,4 @@ pretty.o: pretty.c
 	$(CC) $(CFLAGS) -c pretty.c
 
 clean:
-	rm -f *.o lex.yy.c y.tab.c y.tab.h minilang; rm -f ../*.log
+	rm -f *.o lex.yy.c y.tab.c y.tab.h minilang; rm -f ../*.log; rm -f ../*.pretty.min

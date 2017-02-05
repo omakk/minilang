@@ -9,12 +9,15 @@ ASTNode  *ast;
 
 char *pretty_output_file (char *s)
 {
-    char *res = s;
-    while (*res != '.') res++;
-    
-    strcpy(res, ".pretty.min");
+        char *fname;
+        const char slash = '/';
 
-    return s;
+        fname = strrchr(s, slash);
+        char *res = (char *) malloc(sizeof(fname)+8);
+        sscanf(fname, "/%[^.].min", res);
+        res = strcat(res, ".pretty.min");
+        
+        return res;
 }   
 
 int main(int argc, char *argv[])
@@ -25,7 +28,8 @@ int main(int argc, char *argv[])
     
     //printf("%s\n", pretty_output_file(argv[1]));
     FILE *f = fopen(pretty_output_file(argv[1]), "w");
-    pretty_print(f, ast);
+    pretty_print(f, ast, 0);
+    fclose(f);
 
     return 0;
 }
