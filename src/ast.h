@@ -55,7 +55,7 @@ ASTNode *make_ast_node_prog         ( ASTNode *dcls, ASTNode *stmts             
 ASTNode *make_ast_node_dcls         ( ASTNode *dcl,  ASTNode *dcls                        );
 ASTNode *make_ast_node_stmts        ( ASTNode *stmt, ASTNode *stmts                       );
 ASTNode *make_ast_node_mulbop       ( ASTNode *l,    ASTNode *r                           );
-ASTNode *make_ast_node_divlbop      ( ASTNode *l,    ASTNode *r                           );
+ASTNode *make_ast_node_divbop       ( ASTNode *l,    ASTNode *r                           );
 ASTNode *make_ast_node_plusbop      ( ASTNode *l,    ASTNode *r                           );
 ASTNode *make_ast_node_minusbop     ( ASTNode *l,    ASTNode *r                           );
 ASTNode *make_ast_node_whilebranch  ( ASTNode *cond, ASTNode *while_body                  );

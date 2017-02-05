@@ -35,9 +35,9 @@ ASTNode *make_ast_node_intlit (int i)
 
 ASTNode *make_ast_node_floatlit (float f)
 {
-        ASTNode *node    = (ASTNode *) malloc(sizeof(ASTNode));
-        node->construct  = CON_FLOATLIT;
-        node->val.intval = f;
+        ASTNode *node      = (ASTNode *) malloc(sizeof(ASTNode));
+        node->construct    = CON_FLOATLIT;
+        node->val.floatval = f;
         return node;
 }
 
@@ -142,8 +142,8 @@ ASTNode *make_ast_node_plusbop (ASTNode *l, ASTNode *r)
 
 ASTNode *make_ast_node_minusbop (ASTNode *l, ASTNode *r)
 {
-        ASTNode *node           = (ASTNode *) malloc(sizeof(ASTNode));
-        node->construct         = CON_BOP_MINUS;
+        ASTNode *node            = (ASTNode *) malloc(sizeof(ASTNode));
+        node->construct          = CON_BOP_MINUS;
         node->val.minusbop.left  = l;
         node->val.minusbop.right = r;
         return node;
