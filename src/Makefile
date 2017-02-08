@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS =  -w -g -ansi -pedantic
+CFLAGS =  -Wall -Wextra -g -ansi -pedantic
 
 DEBUG ?= 0
 ifeq ($(DEBUG), 1)
