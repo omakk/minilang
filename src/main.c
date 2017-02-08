@@ -27,7 +27,9 @@ int main(int argc, char *argv[])
             printf("VALID\n");
     
     //printf("%s\n", pretty_output_file(argv[1]));
-    FILE *f = fopen(pretty_output_file(argv[1]), "w");
+    char *out_fn = pretty_output_file(argv[1]);
+    FILE *f = fopen(out_fn, "w");
+    printf("Printing ast to %s...\n", out_fn);
     pretty_print(f, ast, 0);
     fclose(f);
 

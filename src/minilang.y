@@ -2,8 +2,8 @@
     #include <stdlib.h>
     #include <stdio.h>
     #include "ast.h"
+    #include "debug.h"
     
-    extern char      *yytext;
     extern int      yylineno;
     extern ASTNode      *ast;
     
@@ -35,9 +35,7 @@
 %token  ENDIF
 %token  PRINT
 %token  READ
-%token <type>      TYPE_INT 
-%token <type>      TYPE_FLOAT          
-%token <type>      TYPE_STRING 
+%token <type>      TYPE_INT TYPE_FLOAT TYPE_STRING
 %token <intval>    INTLITERAL
 %token <floatval>  FLOATLITERAL
 %token <strval>    STRLITERAL
@@ -50,7 +48,7 @@
 
 %left '+' '-'
 %left '*' '/'
-%left NEG
+%right NEG
 
 %%
 
@@ -65,12 +63,15 @@ dcls    : dcl dcls
         ;
 
 dcl     : VAR IDENTIFIER COLON type SEMICOLON
-          { $$ = make_ast_node_decl($2, $4); }
+          { $$ = make_ast_node_decl($2, $4); DBG(("declared %s\n",$2)); }
         ;
 
 type    : TYPE_INT      
+          { $$ = "int"; }
         | TYPE_FLOAT    
-        | TYPE_STRING   
+          { $$ = "float"; }
+        | TYPE_STRING
+          { $$ = "string"; }   
         ;
 
 stmts   : stmt stmts 
@@ -80,11 +81,11 @@ stmts   : stmt stmts
         ;
 
 stmt    : READ IDENTIFIER SEMICOLON
-          { $$ = make_ast_node_read($2); }
+          { $$ = make_ast_node_read($2); DBG(("reading into %s\n", $2));}
         | PRINT exp SEMICOLON
           { $$ = make_ast_node_print($2); }
         | IDENTIFIER '=' exp SEMICOLON
-          { $$ = make_ast_node_assign($1, $3); }
+          { $$ = make_ast_node_assign($1, $3); DBG(("Assigning to %s\n", $1));}
         | IF exp THEN stmts ENDIF
           { $$ = make_ast_node_ifbranch($2, $4); }
         | IF exp THEN stmts ELSE stmts ENDIF
@@ -94,7 +95,7 @@ stmt    : READ IDENTIFIER SEMICOLON
         ;
 
 exp     : IDENTIFIER
-          { $$ = make_ast_node_ident($1); }
+          { $$ = make_ast_node_ident($1); DBG(("%s is part of an expression\n", $1));}
         | INTLITERAL
           { $$ = make_ast_node_intlit($1); }
         | FLOATLITERAL
@@ -112,7 +113,7 @@ exp     : IDENTIFIER
         | '-' exp %prec NEG
           { $$ = make_ast_node_minusuop($2); }
         | '(' exp ')'
-          { $$ = make_ast_node_parenexp($2); }
+          { $$ = $2; }
         ;
 
 %%
