@@ -58,12 +58,14 @@ program : dcls stmts
 
 dcls    : dcl dcls
           { $$ = make_ast_node_dcls($1, $2); }
+        | dcl
+          { $$ = $1;}
         | %empty
           { $$ = NULL; }
         ;
 
 dcl     : VAR IDENTIFIER COLON type SEMICOLON
-          { $$ = make_ast_node_decl($2, $4); DBG(("declared %s\n",$2)); }
+          { $$ = make_ast_node_decl($2, $4); }
         ;
 
 type    : TYPE_INT      
@@ -76,16 +78,18 @@ type    : TYPE_INT
 
 stmts   : stmt stmts 
           { $$ = make_ast_node_stmts($1, $2); }
+        | stmt
+          { $$ = $1; }
         | %empty
           { $$ = NULL; }
         ;
 
 stmt    : READ IDENTIFIER SEMICOLON
-          { $$ = make_ast_node_read($2); DBG(("reading into %s\n", $2));}
+          { $$ = make_ast_node_read($2); }
         | PRINT exp SEMICOLON
           { $$ = make_ast_node_print($2); }
         | IDENTIFIER '=' exp SEMICOLON
-          { $$ = make_ast_node_assign($1, $3); DBG(("Assigning to %s\n", $1));}
+          { $$ = make_ast_node_assign($1, $3); }
         | IF exp THEN stmts ENDIF
           { $$ = make_ast_node_ifbranch($2, $4); }
         | IF exp THEN stmts ELSE stmts ENDIF
@@ -95,7 +99,7 @@ stmt    : READ IDENTIFIER SEMICOLON
         ;
 
 exp     : IDENTIFIER
-          { $$ = make_ast_node_ident($1); DBG(("%s is part of an expression\n", $1));}
+          { $$ = make_ast_node_ident($1); }
         | INTLITERAL
           { $$ = make_ast_node_intlit($1); }
         | FLOATLITERAL
