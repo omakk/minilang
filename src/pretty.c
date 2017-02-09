@@ -64,7 +64,7 @@ void pretty_print(FILE *f, ASTNode *tree, int indent)
                         
                         case CON_BOP_DIV:
                         
-                                DBG(("CON_BOP_DIV\n"
+                                DBG(("CON_BOP_DIV(%s, %s)\n"
                                         , get_construct(tree->val.divbop.left->construct)
                                         , get_construct(tree->val.divbop.right->construct)));
                         
@@ -77,7 +77,7 @@ void pretty_print(FILE *f, ASTNode *tree, int indent)
                         
                         case CON_BOP_PLUS:
                         
-                                DBG(("CON_BOP_PLUS\n"
+                                DBG(("CON_BOP_PLUS(%s, %s)\n"
                                         , get_construct(tree->val.plusbop.left->construct)
                                         , get_construct(tree->val.plusbop.right->construct)));
                         
@@ -90,7 +90,7 @@ void pretty_print(FILE *f, ASTNode *tree, int indent)
                        
                         case CON_BOP_MINUS:
                        
-                                DBG(("CON_BOP_MINUS\n"
+                                DBG(("CON_BOP_MINUS(%s, %s)\n"
                                         , get_construct(tree->val.minusbop.left->construct)
                                         , get_construct(tree->val.minusbop.right->construct)));
                        
@@ -103,7 +103,7 @@ void pretty_print(FILE *f, ASTNode *tree, int indent)
                        
                         case CON_PROGRAM:
                        
-                                DBG(("CON_PROGRAM()\n"
+                                DBG(("CON_PROGRAM\n"
                                         /*, get_construct(tree->val.prog.dcls->construct)
                                         , get_construct(tree->val.prog.stmts->construct)*/));
                        
@@ -170,9 +170,7 @@ void pretty_print(FILE *f, ASTNode *tree, int indent)
                        
                         case CON_IF:
                        
-                                DBG(("CON_IF()\n"/*
-                                        , get_construct(tree->val.ifbranch.cond->construct)
-                                        , get_construct(tree->val.ifbranch.if_body->construct)*/));
+                                DBG(("CON_IF\n"));
                        
                                 fprintf(f, "%*sif ", indent, "");
                                 pretty_print(f, tree->val.ifbranch.cond, indent);
@@ -184,10 +182,7 @@ void pretty_print(FILE *f, ASTNode *tree, int indent)
                        
                         case CON_IF_ELSE:
                        
-                                DBG(("CON_IF_ELSE()\n"/*
-                                        , get_construct(tree->val.ifelsebranch.cond->construct)
-                                        , get_construct(tree->val.ifelsebranch.if_body->construct)
-                                        , get_construct(tree->val.ifelsebranch.else_body->construct)*/));
+                                DBG(("CON_IF_ELSE\n"));
                        
                                 fprintf(f, "%*sif ", indent, "");
                                 pretty_print(f, tree->val.ifelsebranch.cond, indent);
@@ -202,9 +197,7 @@ void pretty_print(FILE *f, ASTNode *tree, int indent)
                        
                         case CON_WHILE:
                        
-                                DBG(("CON_WHILE()\n"/*
-                                        , get_construct(tree->val.whilebranch.cond->construct)
-                                        , get_construct(tree->val.whilebranch.while_body->construct)*/));
+                                DBG(("CON_WHILE\n"));
                        
                                 fprintf(f, "%*swhile ", indent, "");
                                 pretty_print(f, tree->val.whilebranch.cond, indent);
