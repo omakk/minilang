@@ -1,3 +1,0 @@
-// simple valid identifiers, lowercase ASCII only
-var x : int;
-var itisanicevar : int;

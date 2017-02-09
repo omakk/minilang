@@ -68,10 +68,10 @@ ASTNode *make_ast_node_decl (char *id, char *type)
 
 ASTNode *make_ast_node_assign (char *id, ASTNode *e)
 {
-        ASTNode *node          = malloc(sizeof(ASTNode));
-        node->construct        = CON_ASSIGN;
-        node->val.assign.id    = make_ast_node_ident(id);
-        node->val.assign.e     = e;
+        ASTNode *node        = malloc(sizeof(ASTNode));
+        node->construct      = CON_ASSIGN;
+        node->val.assign.id  = make_ast_node_ident(id);
+        node->val.assign.e   = e;
         return node;
 }
 

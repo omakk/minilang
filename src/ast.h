@@ -12,22 +12,19 @@ enum ast_construct {
 typedef struct ASTNode {
         enum ast_construct construct;
         union {
-               // Leaf
                char     *idval;
                int      intval;
                float  floatval;
                char    *strval;
 
-               // One subtree
                struct ASTNode *printexp;
                struct ASTNode *minusuop; 
                struct ASTNode *readidval;
 
-               // Two subtrees
                struct { struct ASTNode *id;   struct ASTNode *e;          } assign;
                struct { struct ASTNode *id;   char           *type;       } decl;
-               struct { struct ASTNode *dcl;  struct ASTNode *dcls        } dcls;
-               struct { struct ASTNode *stmt; struct ASTNode *stmts       } stmts;
+               struct { struct ASTNode *dcl;  struct ASTNode *dcls;       } dcls;
+               struct { struct ASTNode *stmt; struct ASTNode *stmts;      } stmts;
                struct { struct ASTNode *dcls; struct ASTNode *stmts;      } prog;
                struct { struct ASTNode *left; struct ASTNode *right;      } mulbop;
                struct { struct ASTNode *left; struct ASTNode *right;      } divbop; 
@@ -36,7 +33,6 @@ typedef struct ASTNode {
                struct { struct ASTNode *cond; struct ASTNode *while_body; } whilebranch;
                struct { struct ASTNode *cond; struct ASTNode *if_body;    } ifbranch;
 
-               // Three subtrees
                struct { struct ASTNode *cond; struct ASTNode *if_body; struct ASTNode *else_body; } ifelsebranch;
         } val;
 } ASTNode;
