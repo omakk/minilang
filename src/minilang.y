@@ -58,8 +58,6 @@ program : dcls stmts
 
 dcls    : dcl dcls
           { $$ = make_ast_node_dcls($1, $2); }
-        | dcl
-          { $$ = $1;}
         | %empty
           { $$ = NULL; }
         ;
@@ -78,8 +76,6 @@ type    : TYPE_INT
 
 stmts   : stmt stmts 
           { $$ = make_ast_node_stmts($1, $2); }
-        | stmt
-          { $$ = $1; }
         | %empty
           { $$ = NULL; }
         ;

@@ -1,7 +1,0 @@
-// valid if-while, nested
-var x : int;
-if 1 then
-	while 1 do
-		x = 1;
-	done
-endif
