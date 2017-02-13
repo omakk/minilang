@@ -8,8 +8,7 @@
 
 typedef struct SYMBOL {
         char            *name;
-        const char            *type;
-        int             value;
+        const char      *type;
         struct SYMBOL   *next;
 } SYMBOL;
 
