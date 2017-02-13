@@ -97,19 +97,19 @@ void sym_table_from_ast(SYM_TABLE *t, ASTNode *ast)
                 case CON_BOP_MINUS: sym_table_from_ast(t, ast->val.minusbop.left);
                                     sym_table_from_ast(t, ast->val.minusbop.right); break;
                 case CON_PROGRAM:
-                        if (ast->val.prog.dcls)
+                        if (ast->val.prog.dcls != NULL)
                                 sym_table_from_ast(t, ast->val.prog.dcls);
-                        if (ast->val.prog.stmts)
+                        if (ast->val.prog.stmts != NULL)
                                 sym_table_from_ast(t, ast->val.prog.stmts);
                         break;
                 case CON_DCLS:
                         sym_table_from_ast(t, ast->val.dcls.dcl);
-                        if (ast->val.dcls.dcls)
+                        if (ast->val.dcls.dcls != NULL)
                                 sym_table_from_ast(t, ast->val.dcls.dcls);
                         break;
                 case CON_STMTS:
                         sym_table_from_ast(t, ast->val.stmts.stmt);
-                        if (ast->val.stmts.stmts)
+                        if (ast->val.stmts.stmts != NULL)
                                 sym_table_from_ast(t, ast->val.stmts.stmts);
                         break;
                 case CON_READ:
@@ -140,21 +140,21 @@ void sym_table_from_ast(SYM_TABLE *t, ASTNode *ast)
                         break;
                 case CON_IF:
                         sym_table_from_ast(t, ast->val.ifbranch.cond);
-                        if (ast->val.ifbranch.if_body)
+                        if (ast->val.ifbranch.if_body != NULL)
                                 sym_table_from_ast(t, ast->val.ifbranch.if_body);
                         break;
                
                 case CON_IF_ELSE:
                         sym_table_from_ast(t, ast->val.ifelsebranch.cond);
-                        if (ast->val.ifelsebranch.if_body)
+                        if (ast->val.ifelsebranch.if_body != NULL)
                                 sym_table_from_ast(t, ast->val.ifelsebranch.if_body);
-                        if (ast->val.ifelsebranch.else_body)
+                        if (ast->val.ifelsebranch.else_body != NULL)
                                 sym_table_from_ast(t, ast->val.ifelsebranch.else_body);
                         break;
                
                 case CON_WHILE:
                         sym_table_from_ast(t, ast->val.whilebranch.cond);
-                        if (ast->val.whilebranch.while_body)
+                        if (ast->val.whilebranch.while_body != NULL)
                                 sym_table_from_ast(t, ast->val.whilebranch.while_body);
                         break;
                
