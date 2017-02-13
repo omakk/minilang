@@ -1,0 +1,7 @@
+var x: int;
+var s: string;
+var s1: string;
+var triple: int;
+
+s1 = s * x;
+triple = x * s; // type error

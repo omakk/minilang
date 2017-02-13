@@ -1,0 +1,6 @@
+// if conditions must return ints
+var x: float;
+
+if x then
+        x = 2.5;
+endif

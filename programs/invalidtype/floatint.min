@@ -1,0 +1,7 @@
+// assiging a float to an int is INVALID
+// but assigning an int to a float is VALID
+var x: int;
+var f: float;
+
+f = 2; // VALID
+x = 2.5; // INVALID

@@ -1,0 +1,7 @@
+// string + int is INVALID
+var s: string;
+var s1: string;
+var x: int;
+
+s1 = s + s;
+s1 = s + x;

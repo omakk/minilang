@@ -1,0 +1,4 @@
+// Undeclared variable
+var x: string;
+
+print y;

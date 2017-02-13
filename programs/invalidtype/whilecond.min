@@ -1,0 +1,9 @@
+var s: string;
+var x: int;
+
+x = 1;
+if x then
+        while s do
+                x = x + 1;
+        done
+endif

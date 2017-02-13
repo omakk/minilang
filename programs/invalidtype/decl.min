@@ -1,0 +1,4 @@
+// redeclaration
+var x: string;
+var y: int;
+var x: float; //declaration error
