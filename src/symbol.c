@@ -1,12 +1,21 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "symbol.h"
 
+int sym_hash(char *s)
+{
+        unsigned int hash = 0;
+        while (*s) hash = (hash << 1) + *s++;
+        return hash % HASH_SIZE;
+}
+
 SYM_TABLE *init_sym_table()
 {
+        int i;
         SYM_TABLE *t;
         t = malloc(sizeof(SYM_TABLE));
-        for (int i = 0; i < HASH_SIZE; i++)
+        for (i = 0; i < HASH_SIZE; i++)
                 t->table[i] = NULL;
         t->next = NULL;
         return t;
@@ -55,10 +64,17 @@ int sym_defined (SYM_TABLE *t, char *name)
         return sym_defined(t->next, name);
 }
 
-void make_sym_table(ASTNode *ast)
+void make_sym_table(FILE *f, ASTNode *ast)
 {
         sym_table = malloc(sizeof(SYM_TABLE));
         sym_table_from_ast(sym_table, ast);
+        print_sym_table(f, sym_table);
+}
+
+void report_sym_error(const char *msg, char *name, int lineno)
+{
+        fprintf(stderr, "INVALID: %s \"%s\"; line: %d\n", msg, name, lineno);
+        exit(1);
 }
 
 void sym_table_from_ast(SYM_TABLE *t, ASTNode *ast)
@@ -68,8 +84,7 @@ void sym_table_from_ast(SYM_TABLE *t, ASTNode *ast)
                 case CON_IDENT:
                         
                         if (!sym_defined(t, ast->val.idval))
-                                // @Error
-                                ;
+                                report_sym_error("undeclared identifier", ast->val.idval, ast->lineno);
                         break;
                 
                 case CON_UOP_MINUS: sym_table_from_ast(t, ast->val.minusuop);       break;
@@ -99,24 +114,29 @@ void sym_table_from_ast(SYM_TABLE *t, ASTNode *ast)
                         break;
                 case CON_READ:
                         if (!sym_defined(t, ast->val.readidval->val.idval))
-                                // @Error
+                                report_sym_error("undeclared identifier", ast->val.idval, ast->lineno);
                         break;
                 case CON_PRINT:
                         sym_table_from_ast(t, ast->val.printexp);
                         break;
                 case CON_DECL:
-                        if (sym_defined(t, ast->val.decl.id->val.idval))
-                                // Declaring a variable that has already been declared
-                                // @Error
-                                ;
+                        if (sym_defined(t, ast->val.decl.id->val.idval)) {
+                                /* Multiple declarations of the same variable found */
+                                report_sym_error("multiple delcarations",
+                                                  ast->val.decl.id->val.idval,
+                                                  ast->lineno);
+                        }
                         else
                                 put_sym(t, ast->val.decl.id->val.idval, ast->val.decl.type);
                         break;
                
                 case CON_ASSIGN:
-                        if (!sym_defined(t, ast->val.assign.id->val.idval))
-                             // Cannot assign into undeclared variable
-                             // @Error   
+                        if (!sym_defined(t, ast->val.assign.id->val.idval)) {
+                                /* Cannot assign into undeclared variable */
+                                report_sym_error("assignment of undeclared identifier",
+                                                  ast->val.assign.id->val.idval,
+                                                  ast->lineno);
+                        }
                         break;
                 case CON_IF:
                
@@ -143,5 +163,16 @@ void sym_table_from_ast(SYM_TABLE *t, ASTNode *ast)
                
                 default:
                         break;
+        }
+}
+
+void print_sym_table(FILE *f, SYM_TABLE *t)
+{
+        int i;
+        SYMBOL *s;
+
+        for (i = 0; i < HASH_SIZE; i++) {
+                for ( s = t->table[i]; s; s = s->next)
+                        fprintf(f, "%s: %s\n", s->name, s->type);
         }
 }
