@@ -26,7 +26,7 @@ fi
 # to run your compiler. The run.sh script must take a single
 # argument, the filename, and pass the contents to your compiler.
 # A sample run.sh file using rediction has been provided.
- 
+
 if [ ! -f run.sh ]
 then
 	echo "ERROR: Missing run.sh script"
@@ -41,7 +41,7 @@ fi
 # A log of the output is written to valid.log
 
 VALID_DIR=./programs/valid/*.min
- 
+
 echo
 echo "*****************************"
 echo "  Valid programs"
@@ -66,12 +66,12 @@ do
 		((VALID_CORRECT++))
 	else
 		echo -e -n " \033[0;31m[fail]"
-	fi 
+	fi
 	echo -e "\033[0m"
-done 
+done
 echo
 echo ">>>>> # valid programs handled: ${VALID_CORRECT}/${VALID}"
- 
+
 # 3. Run all invalid programs
 #
 # For invalid programs, your compiler *MUST*
@@ -96,7 +96,7 @@ INVALID_CORRECT=0
 for PROG in $INVALID_DIR
 do
 	((INVALID++))
-	
+
 	echo -n "$PROG: " | tee -a invalid.log
 	./run.sh $PROG 2>&1 | tee -a invalid.log | tr -d '\n'
 	if [ ${PIPESTATUS[0]} -eq 1 ]
@@ -105,9 +105,47 @@ do
 		((INVALID_CORRECT++))
 	else
 		echo -e -n " \033[0;31m[fail]"
-	fi 
+	fi
 	echo -e "\033[0m"
-done 
+done
 echo
 echo ">>>>> # invalid programs handled: ${INVALID_CORRECT}/${INVALID}"
 
+# 4. Run all invalid type programs
+#
+# For invalid programs, your compiler *MUST*
+#   (a) output: INVALID: <error>
+#   (b) exit with status code 1
+# A log of the output is written to invalidtype.log
+
+INVALID_TYPE_DIR=./programs/invalidtype/*.min
+
+echo
+echo "*****************************"
+echo "  Invalid programs"
+echo "*****************************"
+
+if [ -f invalidtype.log ]
+then
+	rm invalidtype.log
+fi
+
+INVALID=0
+INVALID_CORRECT=0
+for PROG in $INVALID_TYPE_DIR
+do
+	((INVALID++))
+
+	echo -n "$PROG: " | tee -a invalidtype.log
+	./run.sh $PROG 2>&1 | tee -a invalidtype.log | tr -d '\n'
+	if [ ${PIPESTATUS[0]} -eq 1 ]
+	then
+		echo -e -n " \033[0;32m[pass]"
+		((INVALID_CORRECT++))
+	else
+		echo -e -n " \033[0;31m[fail]"
+	fi
+	echo -e "\033[0m"
+done
+echo
+echo ">>>>> # invalid programs handled: ${INVALID_CORRECT}/${INVALID}"
