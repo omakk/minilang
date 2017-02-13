@@ -10,6 +10,7 @@ enum ast_construct {
                    };
 
 typedef struct ASTNode {
+        int lineno;
         enum ast_construct construct;
         union {
                char     *idval;
@@ -37,24 +38,24 @@ typedef struct ASTNode {
         } val;
 } ASTNode;
 
-ASTNode *make_ast_node_ident        ( char    *id                                         );
-ASTNode *make_ast_node_read         ( char    *id                                         );
-ASTNode *make_ast_node_strlit       ( char    *s                                          );
-ASTNode *make_ast_node_intlit       ( int      i                                          );
-ASTNode *make_ast_node_floatlit     ( float    f                                          );
-ASTNode *make_ast_node_print        ( ASTNode *e                                          );
-ASTNode *make_ast_node_minusuop     ( ASTNode *e                                          );
-ASTNode *make_ast_node_decl         ( char    *id,   char    *type                        );
-ASTNode *make_ast_node_assign       ( char    *id,   ASTNode *e                           );
-ASTNode *make_ast_node_prog         ( ASTNode *dcls, ASTNode *stmts                       );
-ASTNode *make_ast_node_dcls         ( ASTNode *dcl,  ASTNode *dcls                        );
-ASTNode *make_ast_node_stmts        ( ASTNode *stmt, ASTNode *stmts                       );
-ASTNode *make_ast_node_mulbop       ( ASTNode *l,    ASTNode *r                           );
-ASTNode *make_ast_node_divbop       ( ASTNode *l,    ASTNode *r                           );
-ASTNode *make_ast_node_plusbop      ( ASTNode *l,    ASTNode *r                           );
-ASTNode *make_ast_node_minusbop     ( ASTNode *l,    ASTNode *r                           );
-ASTNode *make_ast_node_whilebranch  ( ASTNode *cond, ASTNode *while_body                  );
-ASTNode *make_ast_node_ifbranch     ( ASTNode *cond, ASTNode *if_body                     );
-ASTNode *make_ast_node_ifelsebranch ( ASTNode *cond, ASTNode *if_body, ASTNode *else_body );
+ASTNode *make_ast_node_ident        ( char    *id,                                          int lineno);
+ASTNode *make_ast_node_read         ( char    *id,                                          int lineno);
+ASTNode *make_ast_node_strlit       ( char    *s,                                           int lineno);
+ASTNode *make_ast_node_intlit       ( int      i,                                           int lineno);
+ASTNode *make_ast_node_floatlit     ( float    f,                                           int lineno);
+ASTNode *make_ast_node_print        ( ASTNode *e,                                           int lineno);
+ASTNode *make_ast_node_minusuop     ( ASTNode *e,                                           int lineno);
+ASTNode *make_ast_node_decl         ( char    *id,   char    *type,                         int lineno);
+ASTNode *make_ast_node_assign       ( char    *id,   ASTNode *e,                            int lineno);
+ASTNode *make_ast_node_prog         ( ASTNode *dcls, ASTNode *stmts,                        int lineno);
+ASTNode *make_ast_node_dcls         ( ASTNode *dcl,  ASTNode *dcls,                         int lineno);
+ASTNode *make_ast_node_stmts        ( ASTNode *stmt, ASTNode *stmts,                        int lineno);
+ASTNode *make_ast_node_mulbop       ( ASTNode *l,    ASTNode *r,                            int lineno);
+ASTNode *make_ast_node_divbop       ( ASTNode *l,    ASTNode *r,                            int lineno);
+ASTNode *make_ast_node_plusbop      ( ASTNode *l,    ASTNode *r,                            int lineno);
+ASTNode *make_ast_node_minusbop     ( ASTNode *l,    ASTNode *r,                            int lineno);
+ASTNode *make_ast_node_whilebranch  ( ASTNode *cond, ASTNode *while_body,                   int lineno);
+ASTNode *make_ast_node_ifbranch     ( ASTNode *cond, ASTNode *if_body,                      int lineno);
+ASTNode *make_ast_node_ifelsebranch ( ASTNode *cond, ASTNode *if_body, ASTNode *else_body,  int lineno);
 
 #endif
