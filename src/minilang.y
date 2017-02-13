@@ -53,17 +53,17 @@
 %%
 
 program : dcls stmts
-          { ast = make_ast_node_prog($1, $2); }
+          { ast = make_ast_node_prog($1, $2, @1.first_line); }
         ;
 
 dcls    : dcl dcls
-          { $$ = make_ast_node_dcls($1, $2); }
+          { $$ = make_ast_node_dcls($1, $2, @1.first_line); }
         | %empty
           { $$ = NULL; }
         ;
 
 dcl     : VAR IDENTIFIER COLON type SEMICOLON
-          { $$ = make_ast_node_decl($2, $4); }
+          { $$ = make_ast_node_decl($2, $4, @1.first_line); }
         ;
 
 type    : TYPE_INT      
@@ -75,43 +75,43 @@ type    : TYPE_INT
         ;
 
 stmts   : stmt stmts 
-          { $$ = make_ast_node_stmts($1, $2); }
+          { $$ = make_ast_node_stmts($1, $2, @1.first_line); }
         | %empty
           { $$ = NULL; }
         ;
 
 stmt    : READ IDENTIFIER SEMICOLON
-          { $$ = make_ast_node_read($2); }
+          { $$ = make_ast_node_read($2, @1.first_line); }
         | PRINT exp SEMICOLON
-          { $$ = make_ast_node_print($2); }
+          { $$ = make_ast_node_print($2, @1.first_line); }
         | IDENTIFIER '=' exp SEMICOLON
-          { $$ = make_ast_node_assign($1, $3); }
+          { $$ = make_ast_node_assign($1, $3, @1.first_line); }
         | IF exp THEN stmts ENDIF
-          { $$ = make_ast_node_ifbranch($2, $4); }
+          { $$ = make_ast_node_ifbranch($2, $4, @1.first_line); }
         | IF exp THEN stmts ELSE stmts ENDIF
-          { $$ = make_ast_node_ifelsebranch($2, $4, $6); }
+          { $$ = make_ast_node_ifelsebranch($2, $4, $6, @1.first_line); }
         | WHILE exp DO stmts DONE
-          { $$ = make_ast_node_whilebranch($2, $4); }
+          { $$ = make_ast_node_whilebranch($2, $4, @1.first_line); }
         ;
 
 exp     : IDENTIFIER
-          { $$ = make_ast_node_ident($1); }
+          { $$ = make_ast_node_ident($1, @1.first_line); }
         | INTLITERAL
-          { $$ = make_ast_node_intlit($1); }
+          { $$ = make_ast_node_intlit($1, @1.first_line); }
         | FLOATLITERAL
-          { $$ = make_ast_node_floatlit($1); }
+          { $$ = make_ast_node_floatlit($1, @1.first_line); }
         | STRLITERAL
-          { $$ = make_ast_node_strlit($1); }
+          { $$ = make_ast_node_strlit($1, @1.first_line); }
         | exp '+' exp
-          { $$ = make_ast_node_plusbop($1, $3); }
+          { $$ = make_ast_node_plusbop($1, $3, @2.first_line); }
         | exp '-' exp
-          { $$ = make_ast_node_minusbop($1, $3); }
+          { $$ = make_ast_node_minusbop($1, $3, @2.first_line); }
         | exp '*' exp
-          { $$ = make_ast_node_mulbop($1, $3); }
+          { $$ = make_ast_node_mulbop($1, $3, @2.first_line); }
         | exp '/' exp
-          { $$ = make_ast_node_divbop($1, $3); }
+          { $$ = make_ast_node_divbop($1, $3, @2.first_line); }
         | '-' exp %prec NEG
-          { $$ = make_ast_node_minusuop($2); }
+          { $$ = make_ast_node_minusuop($2, @1.first_line); }
         | '(' exp ')'
           { $$ = $2; }
         ;

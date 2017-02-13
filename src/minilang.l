@@ -3,8 +3,11 @@
 #include "y.tab.h"
 #include "debug.h"
 void yyerror(char const *);
+#define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
 %}
 
+%option nounput
+%option noinput
 %option yylineno
 
 DIGIT   [0-9]
