@@ -14,25 +14,24 @@ ifeq ($(UNAME), Darwin)
 	lib = -ll
 endif
 
-default: minilang
+SRCS = symbol.c pretty.c ast.c y.tab.c lex.yy.c main.c
+OBJS = $(SRCS:.c=.o)
+MAIN = minilang
 
-minilang: pretty.o ast.o y.tab.o lex.yy.o main.o
-	$(CC) $(CFLAGS) pretty.o ast.o y.tab.o lex.yy.o main.o -o minilang $(lib)
+all: $(MAIN)
+	@echo minilang compiler compilation complete.
 
-y.tab.c: minilang.y
-	bison --yacc --defines minilang.y
+$(MAIN): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(MAIN) $(lib)
 
-lex.yy.c: minilang.l
-	flex minilang.l
+y.tab.c: $(MAIN).y
+	bison --yacc --defines $(MAIN).y
 
-ast.o: ast.c
-	$(CC) $(CFLAGS) -c ast.c
+lex.yy.c: $(MAIN).l
+	flex $(MAIN).l
 
-main.o: main.c
-	$(CC) $(CFLAGS) -c main.c
-
-pretty.o: pretty.c
-	$(CC) $(CFLAGS) -c pretty.c
+.c.o:
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f *.o lex.yy.c y.tab.c y.tab.h minilang; rm -f ../*.log; rm -f ../*.pretty.min
+	rm -f *.o lex.yy.c y.tab.c y.tab.h minilang; rm -f ../*.log; rm -f ../*.pretty.min ../*.symbol.txt
