@@ -8,7 +8,7 @@
 
 typedef struct SYMBOL {
         char            *name;
-        char            *type;
+        const char            *type;
         int             value;
         struct SYMBOL   *next;
 } SYMBOL;
@@ -20,7 +20,7 @@ typedef struct SYM_TABLE {
 
 SYM_TABLE *init_sym_table();
 
-SYMBOL *put_sym(SYM_TABLE *t, char *name, char *type);
+SYMBOL *put_sym(SYM_TABLE *t, char *name, const char *type);
 SYMBOL *get_sym(SYM_TABLE *t, char *name);
 
 int sym_defined(SYM_TABLE *t, char *name);

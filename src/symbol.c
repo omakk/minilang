@@ -21,7 +21,7 @@ SYM_TABLE *init_sym_table()
         return t;
 }
 
-SYMBOL *put_sym(SYM_TABLE *t, char *name, char *type)
+SYMBOL *put_sym(SYM_TABLE *t, char *name, const char *type)
 {
         int i = sym_hash(name);
         SYMBOL *s;
@@ -125,9 +125,9 @@ void sym_table_from_ast(SYM_TABLE *t, ASTNode *ast)
                                 report_sym_error("multiple delcarations",
                                                   ast->val.decl.id->val.idval,
                                                   ast->lineno);
-                        }
-                        else
+                        } else {
                                 put_sym(t, ast->val.decl.id->val.idval, ast->val.decl.type);
+                        }
                         break;
                
                 case CON_ASSIGN:
@@ -139,14 +139,12 @@ void sym_table_from_ast(SYM_TABLE *t, ASTNode *ast)
                         }
                         break;
                 case CON_IF:
-               
                         sym_table_from_ast(t, ast->val.ifbranch.cond);
                         if (ast->val.ifbranch.if_body)
                                 sym_table_from_ast(t, ast->val.ifbranch.if_body);
                         break;
                
                 case CON_IF_ELSE:
-               
                         sym_table_from_ast(t, ast->val.ifelsebranch.cond);
                         if (ast->val.ifelsebranch.if_body)
                                 sym_table_from_ast(t, ast->val.ifelsebranch.if_body);
@@ -155,7 +153,6 @@ void sym_table_from_ast(SYM_TABLE *t, ASTNode *ast)
                         break;
                
                 case CON_WHILE:
-               
                         sym_table_from_ast(t, ast->val.whilebranch.cond);
                         if (ast->val.whilebranch.while_body)
                                 sym_table_from_ast(t, ast->val.whilebranch.while_body);
