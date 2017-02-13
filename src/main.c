@@ -5,9 +5,11 @@
 #include "debug.h"
 #include "pretty.h"
 #include "symbol.h"
+#include "typecheck.h"
 
 int yyparse();
 extern FILE *yyin;
+extern SYM_TABLE *sym_table;
 ASTNode  *ast;
 
 char *change_file_extension (const char *s, const char *extension)
@@ -58,6 +60,9 @@ int main(int argc, const char *argv[])
     free(sym_out_fn);
     fclose(sym_f);
 
+    DBG(("Typechecking program"));
+    typecheck_prog(sym_table, ast);
+    
     printf("VALID\n");
 
     return 0;

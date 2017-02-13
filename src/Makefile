@@ -14,7 +14,7 @@ ifeq ($(UNAME), Darwin)
 	lib = -ll
 endif
 
-SRCS = symbol.c pretty.c ast.c y.tab.c lex.yy.c main.c
+SRCS = typecheck.c symbol.c pretty.c ast.c y.tab.c lex.yy.c main.c
 OBJS = $(SRCS:.c=.o)
 MAIN = minilang
 
