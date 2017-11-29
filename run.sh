@@ -1,12 +1,28 @@
 #/bin/bash
-                                
-# TODO: Specify the compiler invocation
-#
-# You *MUST* replace the following command with the
-# command for invoking your compiler.
- 
-./src/minilang "$1"
 
-# For example, if you produce a flex/bison binary file
-# "minic" in the src directory, you can invoke it using
-# ./src/minic < "$1"
+if [[ $1 = "-h" || $1 = "--help" ]]
+then
+    echo "Usage: ./run.sh -[ch] <.min program>"
+    echo "Options:"
+    echo "\t -c | --clean \t Clean the project after running"
+    echo "\t -h | --help \t Print this help message"
+    exit
+fi
+
+if [ ! -f ./src/minilang ]
+then
+    if [ ! -f build.sh ]
+    then
+	    echo "ERROR: Missing build.sh script"
+	    exit
+    fi
+    ./build.sh > /dev/null
+fi
+
+if [[ $1 == "-c" || $1 == "--clean" ]]
+then
+    ./src/minilang $2
+    make clean -C ./src &> /dev/null
+else
+    ./src/minilang $1
+fi
