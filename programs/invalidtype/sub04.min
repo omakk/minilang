@@ -1,0 +1,16 @@
+// int - float     -> float
+// int - int       -> int
+// float - int     -> float
+// float - float   -> float
+// Everything else is a type error
+
+var a: int;
+var b: float;
+var c: string;
+var d: float;
+
+a = a - a;
+b = b - b;
+b = a - b;
+b = b - a;
+d = c - b; // Subtraction from string is not allowed

@@ -67,15 +67,15 @@ const char *eval_exp_type(SYM_TABLE *t, ASTNode *exp)
                         type_r = eval_exp_type(t, exp->val.divbop.right);
                         
                         if (strcmp(type_l, "int") == 0) {
-                                if (strcmp(type_l, "string") == 0) {
+                                if (strcmp(type_r, "string") == 0) {
                                         report_type_error("type error: int division expected \"int\" or \"float\"", exp->lineno);
                                 } else { 
                                         return type_r;
                                 }
                         } else if (strcmp(type_l, "float") == 0) {
-                                if (strcmp(type_l, "string") == 0) {
+                                if (strcmp(type_r, "string") == 0) {
                                         report_type_error("type error: float division expected \"float\" or \"int\"", exp->lineno);
-                                } else { 
+                                } else {
                                         return type_r;
                                 }
                         } else {
@@ -91,7 +91,7 @@ const char *eval_exp_type(SYM_TABLE *t, ASTNode *exp)
                         type_r = eval_exp_type(t, exp->val.plusbop.right);
                         
                         if (strcmp(type_l, "int") == 0) {
-                                if (strcmp(type_l, "string") == 0) {
+                                if (strcmp(type_r, "string") == 0) {
                                         report_type_error("type error: int addition expected \"int\" or \"float\"", exp->lineno);
                                 } else { 
                                         return type_r;
@@ -107,7 +107,7 @@ const char *eval_exp_type(SYM_TABLE *t, ASTNode *exp)
                                         return "float";
                                 } else {
                                         report_type_error("type error: float addition expected \"float\" or \"int\"", exp->lineno);
-                                } 
+                                }
                         }
                         break;
                 }
@@ -119,9 +119,9 @@ const char *eval_exp_type(SYM_TABLE *t, ASTNode *exp)
                         type_r = eval_exp_type(t, exp->val.minusbop.right);
                         
                         if (strcmp(type_l, "int") == 0) {
-                                if (strcmp(type_l, "string") == 0) {
+                                if (strcmp(type_r, "string") == 0) {
                                         report_type_error("type error: int subtraction expected \"int\" or \"float\"", exp->lineno);
-                                } else { 
+                                } else {
                                         return type_r;
                                 }
                         } else if (strcmp(type_l, "float") == 0) {

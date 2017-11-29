@@ -1,0 +1,19 @@
+// int * float   -> float
+// int * int     -> int
+// float * int   -> float
+// float * float -> float
+// string * int  -> string
+// int * string  -> string
+// Everything else is a type error
+
+var a: int;
+var b: float;
+var c: string;
+
+a = a * a;
+b = b * b;
+b = a * b;
+b = b * a;
+c = c * a;
+c = a * c;
+c = c * b; // Multiplication of string by float is not allowed

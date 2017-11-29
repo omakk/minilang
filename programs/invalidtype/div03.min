@@ -1,0 +1,15 @@
+// int / float   -> float
+// int / int     -> int
+// float / int   -> float
+// float / float -> float
+// Everything else is a type error
+
+var a: int;
+var b: float;
+var c: string;
+
+b = a / b;
+b = b / a;
+a = a / a;
+b = b / b;
+c = c / b; // Division of a string by a float is not allowed

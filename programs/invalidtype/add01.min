@@ -1,0 +1,18 @@
+// int + float     -> float
+// int + int       -> int
+// float + int     -> float
+// float + float   -> float
+// string + string -> string
+// Everything else is a type error
+
+var a: int;
+var b: float;
+var c: string;
+var d: string;
+
+b = a / b;
+b = b / a;
+a = a / a;
+b = b / b;
+d = c + c;
+d = c + a; // Concatenation of string with int is not allowed
