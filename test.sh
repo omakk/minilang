@@ -122,7 +122,7 @@ INVALID_TYPE_DIR=./programs/invalidtype/*.min
 
 echo
 echo "*****************************"
-echo "  Invalid programs"
+echo "  Invalid Typecheck programs"
 echo "*****************************"
 
 if [ -f invalidtype.log ]
@@ -130,22 +130,32 @@ then
 	rm invalidtype.log
 fi
 
-INVALID=0
-INVALID_CORRECT=0
+INVALID_TYPE=0
+INVALID_TYPE_CORRECT=0
 for PROG in $INVALID_TYPE_DIR
 do
-	((INVALID++))
+	((INVALID_TYPE++))
 
 	echo -n "$PROG: " | tee -a invalidtype.log
 	./run.sh $PROG 2>&1 | tee -a invalidtype.log | tr -d '\n'
 	if [ ${PIPESTATUS[0]} -eq 1 ]
 	then
 		echo -e -n " \033[0;32m[pass]"
-		((INVALID_CORRECT++))
+		((INVALID_TYPE_CORRECT++))
 	else
 		echo -e -n " \033[0;31m[fail]"
 	fi
 	echo -e "\033[0m"
 done
 echo
-echo ">>>>> # invalid programs handled: ${INVALID_CORRECT}/${INVALID}"
+echo ">>>>> # invalid programs handled: ${INVALID_TYPE_CORRECT}/${INVALID_TYPE}"
+
+TOTAL=$(($VALID+$INVALID+$INVALID_TYPE))
+TOTAL_CORRECT=$(($VALID_CORRECT+$INVALID_CORRECT+$INVALID_TYPE_CORRECT))
+echo
+echo -e "\033[1;33mtotal tests handled: ${TOTAL_CORRECT}/${TOTAL}\033[0m"
+
+if [[ $# = 1 && $1 = "-c" || $1 = "--clean" ]]
+then
+	make clean -C ./src > /dev/null
+fi
