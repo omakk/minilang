@@ -20,10 +20,10 @@ char *change_file_extension (const char *s, const char *extension)
         dup = strdup(s);
         fname = strrchr(dup, slash);
         if (fname != NULL) {
-                res = malloc(strlen(fname)+ strlen(extension) - 3); /* (3 = strlen(".min") - null tbyte) */
+                res = malloc(strlen(fname)+ strlen(extension) - 3); /* (3 = strlen(".min") - null byte) */
                 sscanf(fname, "/%[^.].min", res);
         } else {
-                res = malloc(strlen(dup)+ strlen(extension) - 3); /* (3 = strlen(".min") - null tbyte) */
+                res = malloc(strlen(dup)+ strlen(extension) - 3); /* (3 = strlen(".min") - null byte) */
                 sscanf(dup, "%[^.].min", res);
         }
         
