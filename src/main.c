@@ -36,35 +36,40 @@ char *change_file_extension (const char *s, const char *extension)
 
 int main(int argc, const char *argv[])
 {
-    char *pretty_out_fn;
-    char *sym_out_fn;
-    FILE *pretty_f;
-    FILE *sym_f;
+        char *pretty_out_fn;
+        char *sym_out_fn;
+        FILE *pretty_f;
+        FILE *sym_f;
 
-    yyin = fopen(argv[1], "r");
-    
-    yyparse();
-    
-    pretty_out_fn = change_file_extension(argv[1], ".pretty.min");
-    sym_out_fn    = change_file_extension(argv[1], ".symbol.txt");
-    
-    pretty_f = fopen(pretty_out_fn, "w");
-    DBG(("Printing ast to %s...\n", pretty_out_fn));
-    pretty_print(pretty_f, ast, 0);
-    free(pretty_out_fn);
-    fclose(pretty_f);
-    
-    sym_f = fopen(sym_out_fn, "w");
-    DBG(("Printing symbol table to %s...\n", sym_out_fn));
-    make_sym_table(sym_f, ast);
-    free(sym_out_fn);
-    fclose(sym_f);
+        if (argc != 2) {
+                printf("Usage: minilang <script.min>\n");
+                exit(1);
+        }
 
-    DBG(("Typechecking program"));
-    typecheck_prog(sym_table, ast);
-    free_sym_table(sym_table);
+        yyin = fopen(argv[1], "r");
 
-    printf("VALID\n");
+        yyparse();
 
-    return 0;
+        pretty_out_fn = change_file_extension(argv[1], ".pretty.min");
+        sym_out_fn    = change_file_extension(argv[1], ".symbol.txt");
+
+        pretty_f = fopen(pretty_out_fn, "w");
+        DBG(("Printing ast to %s...\n", pretty_out_fn));
+        pretty_print(pretty_f, ast, 0);
+        free(pretty_out_fn);
+        fclose(pretty_f);
+
+        sym_f = fopen(sym_out_fn, "w");
+        DBG(("Printing symbol table to %s...\n", sym_out_fn));
+        make_sym_table(sym_f, ast);
+        free(sym_out_fn);
+        fclose(sym_f);
+
+        DBG(("Typechecking program"));
+        typecheck_prog(sym_table, ast);
+        free_sym_table(sym_table);
+
+        printf("VALID\n");
+
+        return 0;
 }
