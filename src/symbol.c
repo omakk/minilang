@@ -10,6 +10,15 @@ int sym_hash(const char *s)
         return hash % HASH_SIZE;
 }
 
+void free_sym(SYMBOL *s)
+{
+        while (s) {
+                SYMBOL *temp = s;
+                s = s->next;
+                free(temp);
+        }
+}
+
 SYM_TABLE *init_sym_table()
 {
         int i;
@@ -161,4 +170,17 @@ void sym_table_from_ast(FILE *f, SYM_TABLE *t, ASTNode *ast)
                 default:
                         break;
         }
+}
+
+void free_sym_table(SYM_TABLE *t)
+{
+        /*
+        We currenly free the argument symbol table only as minilang does not have scopes.
+        Variable can only be declared at the top-level and so we only have one hashtable.
+        If, in the future, scopes are implemented, remember to update this deallocator!!! 
+        */
+        int i;
+        for (i = 0; i < HASH_SIZE; i++)
+                free_sym(t->table[i]);
+        free(t);
 }

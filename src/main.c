@@ -62,7 +62,8 @@ int main(int argc, const char *argv[])
 
     DBG(("Typechecking program"));
     typecheck_prog(sym_table, ast);
-    
+    free_sym_table(sym_table);
+
     printf("VALID\n");
 
     return 0;
