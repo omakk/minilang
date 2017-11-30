@@ -63,15 +63,15 @@ dcls    : dcl dcls
         ;
 
 dcl     : VAR IDENTIFIER COLON type SEMICOLON
-          { $$ = make_ast_node_decl($2, $4, @1.first_line); }
+          { $$ = make_ast_node_decl($2, make_type($4), @1.first_line); }
         ;
 
 type    : TYPE_INT      
           { $$ = "int"; }
-        | TYPE_FLOAT    
+        | TYPE_FLOAT
           { $$ = "float"; }
         | TYPE_STRING
-          { $$ = "string"; }   
+          { $$ = "string"; }
         ;
 
 stmts   : stmt stmts 

@@ -2,12 +2,19 @@
 #define AST_H
 
 enum ast_construct { 
-                     CON_IDENT,     CON_FLOATLIT,  CON_INTLIT,  CON_STRLIT,
-                     CON_BOP_PLUS,  CON_BOP_MINUS, CON_BOP_MUL, CON_BOP_DIV,
-                     CON_UOP_MINUS, CON_IF,        CON_IF_ELSE, CON_WHILE,
-                     CON_READ,      CON_PRINT,     CON_DECL,    CON_ASSIGN,
-                     CON_PROGRAM,   CON_DCLS,      CON_STMTS
-                   };
+        CON_IDENT,     CON_FLOATLIT,  CON_INTLIT,  CON_STRLIT,
+        CON_BOP_PLUS,  CON_BOP_MINUS, CON_BOP_MUL, CON_BOP_DIV,
+        CON_UOP_MINUS, CON_IF,        CON_IF_ELSE, CON_WHILE,
+        CON_READ,      CON_PRINT,     CON_DECL,    CON_ASSIGN,
+        CON_PROGRAM,   CON_DCLS,      CON_STMTS
+};
+
+enum type {
+        TINT, TFLOAT, TSTRING
+};
+
+const char *get_type(enum type type);
+enum type make_type(const char *type);
 
 typedef struct ASTNode {
         int lineno;
@@ -19,17 +26,17 @@ typedef struct ASTNode {
                char    *strval;
 
                struct ASTNode *printexp;
-               struct ASTNode *minusuop; 
+               struct ASTNode *minusuop;
                struct ASTNode *readidval;
 
                struct { struct ASTNode *id;   struct ASTNode *e;          } assign;
-               struct { struct ASTNode *id;   char           *type;       } decl;
+               struct { struct ASTNode *id;   enum type       type;       } decl;
                struct { struct ASTNode *dcl;  struct ASTNode *dcls;       } dcls;
                struct { struct ASTNode *stmt; struct ASTNode *stmts;      } stmts;
                struct { struct ASTNode *dcls; struct ASTNode *stmts;      } prog;
                struct { struct ASTNode *left; struct ASTNode *right;      } mulbop;
-               struct { struct ASTNode *left; struct ASTNode *right;      } divbop; 
-               struct { struct ASTNode *left; struct ASTNode *right;      } plusbop; 
+               struct { struct ASTNode *left; struct ASTNode *right;      } divbop;
+               struct { struct ASTNode *left; struct ASTNode *right;      } plusbop;
                struct { struct ASTNode *left; struct ASTNode *right;      } minusbop; 
                struct { struct ASTNode *cond; struct ASTNode *while_body; } whilebranch;
                struct { struct ASTNode *cond; struct ASTNode *if_body;    } ifbranch;
@@ -45,7 +52,7 @@ ASTNode *make_ast_node_intlit       ( int      i,                               
 ASTNode *make_ast_node_floatlit     ( float    f,                                           int lineno);
 ASTNode *make_ast_node_print        ( ASTNode *e,                                           int lineno);
 ASTNode *make_ast_node_minusuop     ( ASTNode *e,                                           int lineno);
-ASTNode *make_ast_node_decl         ( char    *id,   char    *type,                         int lineno);
+ASTNode *make_ast_node_decl         ( char    *id,   enum type type,                        int lineno);
 ASTNode *make_ast_node_assign       ( char    *id,   ASTNode *e,                            int lineno);
 ASTNode *make_ast_node_prog         ( ASTNode *dcls, ASTNode *stmts,                        int lineno);
 ASTNode *make_ast_node_dcls         ( ASTNode *dcl,  ASTNode *dcls,                         int lineno);

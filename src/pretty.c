@@ -147,14 +147,12 @@ void pretty_print(FILE *f, ASTNode *tree, int indent)
                         break;
                
                 case CON_DECL:
-               
-                        DBG(("CON_DECL(%s, %s)\n"
-                                , tree->val.decl.id->val.idval
-                                , tree->val.decl.type));
-               
-                        fprintf(f, "var %s: %s;\n", tree->val.decl.id->val.idval, tree->val.decl.type);
+
+                        DBG(("CON_DECL(%s, %s)\n", tree->val.decl.id->val.idval, get_type(tree->val.decl.type)));
+
+                        fprintf(f, "var %s: %s;\n", tree->val.decl.id->val.idval, get_type(tree->val.decl.type));
                         break;
-               
+                
                 case CON_ASSIGN:
                
                         DBG(("CON_ASSIGN(%s, %s)\n"
@@ -221,7 +219,7 @@ char *get_construct(enum ast_construct c)
         {
                 case CON_IDENT:     return "CON_IDENT";              
                 case CON_FLOATLIT:  return "CON_FLOATLIT";           
-                case CON_INTLIT:    return "CON_INTLIT";    
+                case CON_INTLIT:    return "CON_INTLIT";
                 case CON_STRLIT:    return "CON_STRLIT";       
                 case CON_BOP_PLUS:  return "CON_BOP_PLUS";     
                 case CON_BOP_MINUS: return "CON_BOP_MINUS";     

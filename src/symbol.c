@@ -3,7 +3,7 @@
 #include <string.h>
 #include "symbol.h"
 
-int sym_hash(char *s)
+int sym_hash(const char *s)
 {
         unsigned int hash = 0;
         while (*s) hash = (hash << 1) + *s++;
@@ -21,7 +21,7 @@ SYM_TABLE *init_sym_table()
         return t;
 }
 
-SYMBOL *put_sym(SYM_TABLE *t, char *name, const char *type)
+SYMBOL *put_sym(SYM_TABLE *t, const char *name, enum type type)
 {
         int i = sym_hash(name);
         SYMBOL *s;
@@ -38,7 +38,7 @@ SYMBOL *put_sym(SYM_TABLE *t, char *name, const char *type)
         return s;
 }
 
-SYMBOL *get_sym(SYM_TABLE *t, char *name)
+SYMBOL *get_sym(SYM_TABLE *t, const char *name)
 {
         int i = sym_hash(name);
         SYMBOL *s;
@@ -51,7 +51,7 @@ SYMBOL *get_sym(SYM_TABLE *t, char *name)
         return get_sym(t->next, name);
 }
 
-int sym_defined (SYM_TABLE *t, char *name)
+int sym_defined (SYM_TABLE *t, const char *name)
 {
         int i = sym_hash(name);
         SYMBOL *s;
@@ -70,7 +70,7 @@ void make_sym_table(FILE *f, ASTNode *ast)
         sym_table_from_ast(f, sym_table, ast);
 }
 
-void report_sym_error(const char *msg, char *name, int lineno)
+void report_sym_error(const char *msg, const char *name, int lineno)
 {
         fprintf(stderr, "INVALID: %s \"%s\"; line: %d\n", msg, name, lineno);
         exit(1);
@@ -81,18 +81,18 @@ void sym_table_from_ast(FILE *f, SYM_TABLE *t, ASTNode *ast)
         switch(ast->construct)
         {
                 case CON_IDENT:
-                        
+
                         if (!sym_defined(t, ast->val.idval))
                                 report_sym_error("undeclared identifier", ast->val.idval, ast->lineno);
                         break;
-                
+
                 case CON_UOP_MINUS: sym_table_from_ast(f, t, ast->val.minusuop);       break;
                 case CON_BOP_MUL:   sym_table_from_ast(f, t, ast->val.mulbop.left);
                                     sym_table_from_ast(f, t, ast->val.mulbop.right);   break;
                 case CON_BOP_DIV:   sym_table_from_ast(f, t, ast->val.divbop.left);
                                     sym_table_from_ast(f, t, ast->val.divbop.right);   break;
                 case CON_BOP_PLUS:  sym_table_from_ast(f, t, ast->val.plusbop.left);
-                                    sym_table_from_ast(f, t, ast->val.plusbop.right);  break; 
+                                    sym_table_from_ast(f, t, ast->val.plusbop.right);  break;
                 case CON_BOP_MINUS: sym_table_from_ast(f, t, ast->val.minusbop.left);
                                     sym_table_from_ast(f, t, ast->val.minusbop.right); break;
                 case CON_PROGRAM:
@@ -126,10 +126,10 @@ void sym_table_from_ast(FILE *f, SYM_TABLE *t, ASTNode *ast)
                                                   ast->lineno);
                         } else {
                                 put_sym(t, ast->val.decl.id->val.idval, ast->val.decl.type);
-                                fprintf(f, "%s: %s\n", ast->val.decl.id->val.idval, ast->val.decl.type);
+                                fprintf(f, "%s: %s\n", ast->val.decl.id->val.idval, get_type(ast->val.decl.type));
                         }
                         break;
-               
+
                 case CON_ASSIGN:
                         if (!sym_defined(t, ast->val.assign.id->val.idval)) {
                                 /* Cannot assign into undeclared variable */
@@ -143,7 +143,7 @@ void sym_table_from_ast(FILE *f, SYM_TABLE *t, ASTNode *ast)
                         if (ast->val.ifbranch.if_body != NULL)
                                 sym_table_from_ast(f, t, ast->val.ifbranch.if_body);
                         break;
-               
+
                 case CON_IF_ELSE:
                         sym_table_from_ast(f, t, ast->val.ifelsebranch.cond);
                         if (ast->val.ifelsebranch.if_body != NULL)
@@ -151,13 +151,13 @@ void sym_table_from_ast(FILE *f, SYM_TABLE *t, ASTNode *ast)
                         if (ast->val.ifelsebranch.else_body != NULL)
                                 sym_table_from_ast(f, t, ast->val.ifelsebranch.else_body);
                         break;
-               
+
                 case CON_WHILE:
                         sym_table_from_ast(f, t, ast->val.whilebranch.cond);
                         if (ast->val.whilebranch.while_body != NULL)
                                 sym_table_from_ast(f, t, ast->val.whilebranch.while_body);
                         break;
-               
+
                 default:
                         break;
         }

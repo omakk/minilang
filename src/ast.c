@@ -1,5 +1,36 @@
 #include <stdlib.h>
+#include <string.h>
 #include "ast.h"
+
+const char *get_type(enum type type)
+{
+        switch(type)
+        {
+        case TINT:
+                return "int";
+                break;
+        case TFLOAT:
+                return "float";
+                break;
+        case TSTRING:
+                return "string";
+                break;
+        }
+
+        return NULL;
+}
+
+enum type make_type(const char *type)
+{
+        if (strcmp(type, "int") == 0)
+                return TINT;
+        else if (strcmp(type, "float") == 0)
+                return TFLOAT;
+        /* else if (strcmp(type, "string") == 0)
+                return TSTRING; */
+        else
+                return TSTRING;
+}
 
 ASTNode *make_ast_node_ident (char * id, int lineno)
 {
@@ -64,7 +95,7 @@ ASTNode *make_ast_node_minusuop (ASTNode *e, int lineno)
         return node;
 }
 
-ASTNode *make_ast_node_decl (char *id, char *type, int lineno)
+ASTNode *make_ast_node_decl (char *id, enum type type, int lineno)
 {
         ASTNode *node        = malloc(sizeof(ASTNode));
         node->lineno         = lineno;
