@@ -75,13 +75,13 @@ enum type eval_exp_type(SYM_TABLE *t, ASTNode *exp)
                 switch(type_l)
                 {
                 case TINT:
-                        if (type_r == TINT || type_l == TFLOAT)
+                        if (type_r == TINT || type_r == TFLOAT)
                                 return type_r;
                         else
                                 report_type_error("type error: int division expected \"int\" or \"float\"", exp->lineno);
                         break;
                 case TFLOAT:
-                        if (type_r == TINT || type_l == TFLOAT)
+                        if (type_r == TINT || type_r == TFLOAT)
                                 return type_r;
                         else
                                 report_type_error("type error: int division expected \"int\" or \"float\"", exp->lineno);
