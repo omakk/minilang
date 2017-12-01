@@ -4,7 +4,7 @@
 void report_type_error(const char *msg, int lineno)
 {
         fprintf(stderr, "INVALID: %s; line: %d\n", msg, lineno);
-        exit(1);
+        type_error = 1;
 }
 
 enum type eval_exp_type(SYM_TABLE *t, ASTNode *exp)
@@ -25,14 +25,11 @@ enum type eval_exp_type(SYM_TABLE *t, ASTNode *exp)
         {
                 enum type type;
                 type = eval_exp_type(t, exp->val.minusuop);
-                switch(type)
-                {
-                case TINT:
-                case TFLOAT:
+                if (type != TINT || type != TFLOAT) {
                         return type;
-                        break;
-                default:
+                } else {
                         report_type_error("type error; unary negation expected \"int\" or \"float\"", exp->lineno);
+                        return TERROR;
                 }
                 break;
         }
@@ -45,20 +42,27 @@ enum type eval_exp_type(SYM_TABLE *t, ASTNode *exp)
 
                 switch(type_l)
                 {
+                case TERROR:
+                        return TERROR;
+                        break;
                 case TINT:
                         return type_r;
                         break;
                 case TSTRING:
-                        if (type_r == TINT)
+                        if (type_r == TINT) {
                                 return TSTRING;
-                        else
+                        } else {
                                 report_type_error("type error: string multiplication expected \"int\"", exp->lineno);
+                                return TERROR;
+                        }
                         break;
                 case TFLOAT:
-                        if (type_r == TINT || type_r == TFLOAT)
+                        if (type_r == TINT || type_r == TFLOAT) {
                                 return TFLOAT;
-                        else
+                        } else {
                                 report_type_error("type error: float multiplication expected \"float\" or \"int\"", exp->lineno);
+                                return TERROR;
+                        }
                         break;
                 default:
                         break;
@@ -74,20 +78,28 @@ enum type eval_exp_type(SYM_TABLE *t, ASTNode *exp)
 
                 switch(type_l)
                 {
+                case TERROR:
+                        return TERROR;
+                        break;
                 case TINT:
-                        if (type_r == TINT || type_r == TFLOAT)
+                        if (type_r == TINT || type_r == TFLOAT) {
                                 return type_r;
-                        else
+                        } else {
                                 report_type_error("type error: int division expected \"int\" or \"float\"", exp->lineno);
+                                return TERROR;
+                        }
                         break;
                 case TFLOAT:
-                        if (type_r == TINT || type_r == TFLOAT)
+                        if (type_r == TINT || type_r == TFLOAT) {
                                 return type_r;
-                        else
+                        } else {
                                 report_type_error("type error: int division expected \"int\" or \"float\"", exp->lineno);
+                                return TERROR;
+                        }
                         break;
                 default:
                         report_type_error("type error: division operation expected \"float\" or \"int\"", exp->lineno);
+                        return TERROR;
                         break;
                 }
                 break;
@@ -101,26 +113,36 @@ enum type eval_exp_type(SYM_TABLE *t, ASTNode *exp)
 
                 switch(type_l)
                 {
+                case TERROR:
+                        return TERROR;
+                        break;
                 case TINT:
-                        if (type_r == TINT || type_r == TFLOAT)
+                        if (type_r == TINT || type_r == TFLOAT) {
                                 return type_r;
-                        else
+                        } else {
                                 report_type_error("type error: int addition expected \"int\" or \"float\"", exp->lineno);
+                                return TERROR;
+                        }
                         break;
                 case TSTRING:
-                        if (type_r == TSTRING)
+                        if (type_r == TSTRING) {
                                 return TSTRING;
-                        else
+                        } else {
                                 report_type_error("type error: string concatenation expected \"string\"", exp->lineno);
+                                return TERROR;
+                        }
                         break;
                 case TFLOAT:
-                        if (type_r == TINT || type_r == TFLOAT)
+                        if (type_r == TINT || type_r == TFLOAT) {
                                 return type_r;
-                        else
+                        } else {
                                 report_type_error("type error: float addition expected \"float\" or \"int\"", exp->lineno);
+                                return TERROR;
+                        }
                         break;
                 default:
                         report_type_error("type error: addition type error", exp->lineno);
+                        return TERROR;
                         break;
                 }
                 break;
@@ -134,37 +156,46 @@ enum type eval_exp_type(SYM_TABLE *t, ASTNode *exp)
 
                 switch (type_l)
                 {
+                case TERROR:
+                        return TERROR;
+                        break;
                 case TINT:
-                        if (type_r == TINT || type_r == TFLOAT)
+                        if (type_r == TINT || type_r == TFLOAT) {
                                 return type_r;
-                        else
+                        } else {
                                 report_type_error("type error: Subtraction from int expects \"int\" or \"float\"", exp->lineno);
+                                return TERROR;
+                        }
                         break;
                 case TFLOAT:
-                        if (type_r == TINT || type_r == TFLOAT)
+                        if (type_r == TINT || type_r == TFLOAT) {
                                 return type_r;
-                        else
+                        } else {
                                 report_type_error("type error: Subtraction from float expects \"float\" or \"int\"", exp->lineno);
+                                return TERROR;
+                        }
                         break;
                 default:
                         report_type_error("type error: Subtraction op expects \"float\" or \"int\"", exp->lineno);
+                        return TERROR;
                         break;
                 }
                 break;
         }
         default:
                 report_type_error("Could note evaluate type", exp->lineno);
+                return TERROR;
                 break;
         }
 }
 
-void typecheck_prog(SYM_TABLE *t, ASTNode *ast)
+int typecheck_prog(SYM_TABLE *t, ASTNode *ast)
 {
         switch(ast->construct)
         {
         case CON_PROGRAM:
                 if (ast->val.prog.stmts != NULL)
-                        typecheck_prog(t, ast->val.prog.stmts);
+                        return typecheck_prog(t, ast->val.prog.stmts);
                 break;
         case CON_ASSIGN:
         {
@@ -174,74 +205,89 @@ void typecheck_prog(SYM_TABLE *t, ASTNode *ast)
                 type_lhs = s->type;
                 type_rhs = eval_exp_type(t, ast->val.stmt.stmtval.assign.e);
 
+                if (type_lhs == TERROR || type_rhs == TERROR)
+                        return 1;
+
                 switch (type_lhs)
                 {
                 case TFLOAT:
-                        if (type_rhs != TINT && type_rhs != TFLOAT)
+                        if (type_rhs != TINT && type_rhs != TFLOAT) {
                                 report_type_error("assignment type error", ast->lineno);
+                                return 1;
+                        }
                         break;
                 default:
-                        if (type_lhs != type_rhs)
+                        if (type_lhs != type_rhs) {
                                 report_type_error("assignment type error", ast->lineno);
+                                return 1;
+                        }
                         break;
                 }
                 if (ast->val.stmt.next)
-                        typecheck_prog(t, ast->val.stmt.next);
+                        return typecheck_prog(t, ast->val.stmt.next);
                 break;
         }
         case CON_READ:
                 if (ast->val.stmt.next)
-                        typecheck_prog(t, ast->val.stmt.next);
+                        return typecheck_prog(t, ast->val.stmt.next);
                 break;
         case CON_PRINT:
                 eval_exp_type(t, ast->val.stmt.stmtval.printexp);
                 if (ast->val.stmt.next)
-                        typecheck_prog(t, ast->val.stmt.next);
+                        return typecheck_prog(t, ast->val.stmt.next);
                 break;
         case CON_IF:
         {
                 enum type ifcond_type;
                 ifcond_type = eval_exp_type(t, ast->val.stmt.stmtval.ifbranch.cond);
-
-                if (ifcond_type != TINT)
+                if (ifcond_type == TERROR)
+                        return 1;
+                if (ifcond_type != TINT) {
                         report_type_error("type error: if condition must evaluate to \"int\"", ast->lineno);
+                        return 1;
+                }
                 if (ast->val.stmt.stmtval.ifbranch.if_body != NULL)
-                        typecheck_prog(t, ast->val.stmt.stmtval.ifbranch.if_body);
+                        return typecheck_prog(t, ast->val.stmt.stmtval.ifbranch.if_body);
                 if (ast->val.stmt.next)
-                        typecheck_prog(t, ast->val.stmt.next);
+                        return typecheck_prog(t, ast->val.stmt.next);
                 break;
         }
         case CON_IF_ELSE:
         {
-                enum type iftype_cond;
-                iftype_cond = eval_exp_type(t, ast->val.stmt.stmtval.ifelsebranch.cond);
-
-                if (iftype_cond != TINT)
+                enum type ifcond_type;
+                ifcond_type = eval_exp_type(t, ast->val.stmt.stmtval.ifelsebranch.cond);
+                if (ifcond_type == TERROR)
+                        return 1;
+                if (ifcond_type != TINT) {
                         report_type_error("type error: if condition must evaluate to \"int\"", ast->lineno);
-
+                        return 1;
+                }
                 if (ast->val.stmt.stmtval.ifelsebranch.if_body != NULL)
-                        typecheck_prog(t, ast->val.stmt.stmtval.ifelsebranch.if_body);
+                        return typecheck_prog(t, ast->val.stmt.stmtval.ifelsebranch.if_body);
                 if (ast->val.stmt.stmtval.ifelsebranch.else_body != NULL)
-                        typecheck_prog(t, ast->val.stmt.stmtval.ifelsebranch.else_body);
+                        return typecheck_prog(t, ast->val.stmt.stmtval.ifelsebranch.else_body);
                 if (ast->val.stmt.next)
-                        typecheck_prog(t, ast->val.stmt.next);
+                        return typecheck_prog(t, ast->val.stmt.next);
                 break;
         }
         case CON_WHILE:
         {
                 enum type whilecond_type;
                 whilecond_type = eval_exp_type(t, ast->val.stmt.stmtval.whilebranch.cond);
-
-                if (whilecond_type != TINT)
+                if (whilecond_type == TERROR)
+                        return 1;
+                if (whilecond_type != TINT) {
                         report_type_error("type error: while condition must evaluate to \"int\"", ast->lineno);
-
+                        return 1;
+                }
                 if (ast->val.stmt.stmtval.whilebranch.while_body != NULL)
-                        typecheck_prog(t, ast->val.stmt.stmtval.whilebranch.while_body);
+                        return typecheck_prog(t, ast->val.stmt.stmtval.whilebranch.while_body);
                 if (ast->val.stmt.next)
-                        typecheck_prog(t, ast->val.stmt.next);
+                        return typecheck_prog(t, ast->val.stmt.next);
                 break;
         }
         default:
                 break;
         }
+        return 0;
 }

@@ -10,7 +10,9 @@
 int yyparse();
 extern FILE *yyin;
 extern SYM_TABLE *sym_table;
-ASTNode  *ast;
+extern int sym_error;
+extern int type_error;
+ASTNode *ast;
 
 char *change_file_extension (const char *s, const char *extension)
 {
@@ -36,10 +38,9 @@ char *change_file_extension (const char *s, const char *extension)
 
 int main(int argc, const char *argv[])
 {
-        char *pretty_out_fn;
-        char *sym_out_fn;
-        FILE *pretty_f;
-        FILE *sym_f;
+        int parse_res;
+        char *pretty_out_fn, *sym_out_fn;
+        FILE *pretty_f, *sym_f;
 
         if (argc != 2) {
                 printf("Usage: minilang <script.min>\n");
@@ -48,7 +49,12 @@ int main(int argc, const char *argv[])
 
         yyin = fopen(argv[1], "r");
 
-        yyparse();
+        parse_res = yyparse();
+        if (parse_res) {
+                free_sym_table(sym_table);
+                free_ast(ast);
+                exit(1);
+        }
 
         pretty_out_fn = change_file_extension(argv[1], ".pretty.min");
         sym_out_fn    = change_file_extension(argv[1], ".symbol.txt");
@@ -64,12 +70,24 @@ int main(int argc, const char *argv[])
         make_sym_table(sym_f, ast);
         free(sym_out_fn);
         fclose(sym_f);
+        if (sym_error) {
+                free_sym_table(sym_table);
+                free_ast(ast);
+                exit(1);
+        }
 
         DBG(("Typechecking program"));
         typecheck_prog(sym_table, ast);
-        free_sym_table(sym_table);
+        if (type_error) {
+                free_sym_table(sym_table);
+                free_ast(ast);
+                exit(1);
+        }
 
         printf("VALID\n");
+
+        free_sym_table(sym_table);
+        free_ast(ast);
 
         return 0;
 }

@@ -10,7 +10,8 @@ enum ast_construct {
 };
 
 enum type {
-        TINT, TFLOAT, TSTRING
+        TINT, TFLOAT, TSTRING,
+        TERROR
 };
 
 const char *get_type(enum type type);
@@ -38,7 +39,7 @@ typedef struct ASTNode {
                                 struct ASTNode *readidval;
                                 struct { struct ASTNode *cond; struct ASTNode *while_body; } whilebranch;
                                 struct { struct ASTNode *cond; struct ASTNode *if_body;    } ifbranch;
-                                struct { struct ASTNode *id; struct ASTNode *e;            } assign;
+                                struct { struct ASTNode *id;   struct ASTNode *e;          } assign;
                                 struct { struct ASTNode *cond; struct ASTNode *if_body; struct ASTNode *else_body; } ifelsebranch;
                         } stmtval;
                         struct ASTNode *next;
@@ -66,5 +67,7 @@ ASTNode *make_ast_node_ifelsebranch ( ASTNode *cond, ASTNode *if_body, ASTNode *
 
 ASTNode *prepend_dcl  (ASTNode *dcl, ASTNode *dcls);
 ASTNode *prepend_stmt (ASTNode *stmt, ASTNode *stmts);
+
+void free_ast(ASTNode *root);
 
 #endif

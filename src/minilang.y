@@ -12,7 +12,7 @@
 
 %union
 {
-    char               *type;
+    const char         *type;
     int               intval;
     float           floatval;
     char             *strval;

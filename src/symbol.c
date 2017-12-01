@@ -82,7 +82,7 @@ void make_sym_table(FILE *f, ASTNode *ast)
 void report_sym_error(const char *msg, const char *name, int lineno)
 {
         fprintf(stderr, "INVALID: %s \"%s\"; line: %d\n", msg, name, lineno);
-        exit(1);
+        sym_error = 1;
 }
 
 void sym_table_from_ast(FILE *f, SYM_TABLE *t, ASTNode *ast)
@@ -90,20 +90,30 @@ void sym_table_from_ast(FILE *f, SYM_TABLE *t, ASTNode *ast)
         switch(ast->construct)
         {
         case CON_IDENT:
-
-                if (!sym_defined(t, ast->val.idval))
+                if (!sym_defined(t, ast->val.idval)) {
                         report_sym_error("undeclared identifier", ast->val.idval, ast->lineno);
+                        return;
+                }
                 break;
-
-        case CON_UOP_MINUS: sym_table_from_ast(f, t, ast->val.minusuop);       break;
-        case CON_BOP_MUL:   sym_table_from_ast(f, t, ast->val.mulbop.left);
-                                sym_table_from_ast(f, t, ast->val.mulbop.right);   break;
-        case CON_BOP_DIV:   sym_table_from_ast(f, t, ast->val.divbop.left);
-                                sym_table_from_ast(f, t, ast->val.divbop.right);   break;
-        case CON_BOP_PLUS:  sym_table_from_ast(f, t, ast->val.plusbop.left);
-                                sym_table_from_ast(f, t, ast->val.plusbop.right);  break;
-        case CON_BOP_MINUS: sym_table_from_ast(f, t, ast->val.minusbop.left);
-                                sym_table_from_ast(f, t, ast->val.minusbop.right); break;
+        case CON_UOP_MINUS:
+                sym_table_from_ast(f, t, ast->val.minusuop);
+                break;
+        case CON_BOP_MUL:
+                sym_table_from_ast(f, t, ast->val.mulbop.left);
+                sym_table_from_ast(f, t, ast->val.mulbop.right);
+                break;
+        case CON_BOP_DIV:
+                sym_table_from_ast(f, t, ast->val.divbop.left);
+                sym_table_from_ast(f, t, ast->val.divbop.right);
+                break;
+        case CON_BOP_PLUS:
+                sym_table_from_ast(f, t, ast->val.plusbop.left);
+                sym_table_from_ast(f, t, ast->val.plusbop.right);
+                break;
+        case CON_BOP_MINUS:
+                sym_table_from_ast(f, t, ast->val.minusbop.left);
+                sym_table_from_ast(f, t, ast->val.minusbop.right);
+                break;
         case CON_PROGRAM:
                 if (ast->val.prog.dcls != NULL)
                         sym_table_from_ast(f, t, ast->val.prog.dcls);
@@ -111,8 +121,10 @@ void sym_table_from_ast(FILE *f, SYM_TABLE *t, ASTNode *ast)
                         sym_table_from_ast(f, t, ast->val.prog.stmts);
                 break;
         case CON_READ:
-                if (!sym_defined(t, ast->val.stmt.stmtval.readidval->val.idval))
+                if (!sym_defined(t, ast->val.stmt.stmtval.readidval->val.idval)) {
                         report_sym_error("undeclared identifier", ast->val.idval, ast->lineno);
+                        return;
+                }
                 if (ast->val.stmt.next)
                         sym_table_from_ast(f, t, ast->val.stmt.next);
                 break;
@@ -128,8 +140,9 @@ void sym_table_from_ast(FILE *f, SYM_TABLE *t, ASTNode *ast)
                         if (sym_defined(t, decl->val.decl.id->val.idval)) {
                                 /* Multiple declarations of the same variable found */
                                 report_sym_error("multiple delcarations",
-                                                        decl->val.decl.id->val.idval,
-                                                        decl->lineno);
+                                                 decl->val.decl.id->val.idval,
+                                                 decl->lineno);
+                                return;
                         } else {
                                 put_sym(t, decl->val.decl.id->val.idval, decl->val.decl.type);
                                 fprintf(f, "%s: %s\n", decl->val.decl.id->val.idval, get_type(decl->val.decl.type));
@@ -143,6 +156,7 @@ void sym_table_from_ast(FILE *f, SYM_TABLE *t, ASTNode *ast)
                         report_sym_error("assignment of undeclared identifier",
                                          ast->val.stmt.stmtval.assign.id->val.idval,
                                          ast->lineno);
+                        return;
                 }
                 if (ast->val.stmt.next)
                         sym_table_from_ast(f, t, ast->val.stmt.next);
@@ -185,6 +199,8 @@ void free_sym_table(SYM_TABLE *t)
         Variable can only be declared at the top-level and so we only have one hashtable.
         If, in the future, scopes are implemented, remember to update this deallocator!!!
         */
+        if (!t) return;
+
         int i;
         for (i = 0; i < HASH_SIZE; i++)
                 free_sym(t->table[i]);

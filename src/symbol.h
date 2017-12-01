@@ -34,4 +34,6 @@ void free_sym_table(SYM_TABLE *t);
 
 SYM_TABLE *sym_table;
 
+int sym_error;
+
 #endif
