@@ -57,7 +57,7 @@ program : dcls stmts
         ;
 
 dcls    : dcl dcls
-          { $$ = make_ast_node_dcls($1, $2, @1.first_line); }
+          { $$ = prepend_dcl($1, $2); }
         | %empty
           { $$ = NULL; }
         ;

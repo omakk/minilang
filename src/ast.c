@@ -102,6 +102,7 @@ ASTNode *make_ast_node_decl (char *id, enum type type, int lineno)
         node->construct      = CON_DECL;
         node->val.decl.id    = make_ast_node_ident(id, lineno);
         node->val.decl.type  = type;
+        node->val.decl.next  = NULL;
         return node;
 }
 
@@ -122,16 +123,6 @@ ASTNode *make_ast_node_prog (ASTNode *dcls, ASTNode *stmts, int lineno)
         node->construct        = CON_PROGRAM;
         node->val.prog.dcls    = dcls;
         node->val.prog.stmts   = stmts;
-        return node;
-}
-
-ASTNode *make_ast_node_dcls (ASTNode *dcl, ASTNode *dcls, int lineno)
-{
-        ASTNode *node          = malloc(sizeof(ASTNode));
-        node->lineno           = lineno;
-        node->construct        = CON_DCLS;
-        node->val.dcls.dcl     = dcl;
-        node->val.dcls.dcls    = dcls;
         return node;
 }
 
@@ -217,4 +208,13 @@ ASTNode *make_ast_node_ifelsebranch (ASTNode *cond, ASTNode *if_body, ASTNode *e
         node->val.ifelsebranch.if_body   = if_body;
         node->val.ifelsebranch.else_body = else_body;
         return node;
+}
+
+ASTNode *prepend_dcl(ASTNode *dcl, ASTNode *dcls)
+{
+        if (!dcl)
+                return NULL;
+        if (dcls)
+                dcl->val.decl.next = dcls;
+        return dcl;
 }

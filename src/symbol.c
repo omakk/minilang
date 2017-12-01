@@ -54,7 +54,7 @@ SYMBOL *get_sym(SYM_TABLE *t, const char *name)
         
         for ( s = t->table[i]; s; s = s->next)
                 if (strcmp(s->name, name) == 0) return s;
-        
+
         if (t->next == NULL) return NULL;
 
         return get_sym(t->next, name);
@@ -89,86 +89,85 @@ void sym_table_from_ast(FILE *f, SYM_TABLE *t, ASTNode *ast)
 {
         switch(ast->construct)
         {
-                case CON_IDENT:
+        case CON_IDENT:
 
-                        if (!sym_defined(t, ast->val.idval))
-                                report_sym_error("undeclared identifier", ast->val.idval, ast->lineno);
-                        break;
+                if (!sym_defined(t, ast->val.idval))
+                        report_sym_error("undeclared identifier", ast->val.idval, ast->lineno);
+                break;
 
-                case CON_UOP_MINUS: sym_table_from_ast(f, t, ast->val.minusuop);       break;
-                case CON_BOP_MUL:   sym_table_from_ast(f, t, ast->val.mulbop.left);
-                                    sym_table_from_ast(f, t, ast->val.mulbop.right);   break;
-                case CON_BOP_DIV:   sym_table_from_ast(f, t, ast->val.divbop.left);
-                                    sym_table_from_ast(f, t, ast->val.divbop.right);   break;
-                case CON_BOP_PLUS:  sym_table_from_ast(f, t, ast->val.plusbop.left);
-                                    sym_table_from_ast(f, t, ast->val.plusbop.right);  break;
-                case CON_BOP_MINUS: sym_table_from_ast(f, t, ast->val.minusbop.left);
-                                    sym_table_from_ast(f, t, ast->val.minusbop.right); break;
-                case CON_PROGRAM:
-                        if (ast->val.prog.dcls != NULL)
-                                sym_table_from_ast(f, t, ast->val.prog.dcls);
-                        if (ast->val.prog.stmts != NULL)
-                                sym_table_from_ast(f, t, ast->val.prog.stmts);
-                        break;
-                case CON_DCLS:
-                        sym_table_from_ast(f, t, ast->val.dcls.dcl);
-                        if (ast->val.dcls.dcls != NULL)
-                                sym_table_from_ast(f, t, ast->val.dcls.dcls);
-                        break;
-                case CON_STMTS:
-                        sym_table_from_ast(f, t, ast->val.stmts.stmt);
-                        if (ast->val.stmts.stmts != NULL)
-                                sym_table_from_ast(f, t, ast->val.stmts.stmts);
-                        break;
-                case CON_READ:
-                        if (!sym_defined(t, ast->val.readidval->val.idval))
-                                report_sym_error("undeclared identifier", ast->val.idval, ast->lineno);
-                        break;
-                case CON_PRINT:
-                        sym_table_from_ast(f, t, ast->val.printexp);
-                        break;
-                case CON_DECL:
-                        if (sym_defined(t, ast->val.decl.id->val.idval)) {
+        case CON_UOP_MINUS: sym_table_from_ast(f, t, ast->val.minusuop);       break;
+        case CON_BOP_MUL:   sym_table_from_ast(f, t, ast->val.mulbop.left);
+                                sym_table_from_ast(f, t, ast->val.mulbop.right);   break;
+        case CON_BOP_DIV:   sym_table_from_ast(f, t, ast->val.divbop.left);
+                                sym_table_from_ast(f, t, ast->val.divbop.right);   break;
+        case CON_BOP_PLUS:  sym_table_from_ast(f, t, ast->val.plusbop.left);
+                                sym_table_from_ast(f, t, ast->val.plusbop.right);  break;
+        case CON_BOP_MINUS: sym_table_from_ast(f, t, ast->val.minusbop.left);
+                                sym_table_from_ast(f, t, ast->val.minusbop.right); break;
+        case CON_PROGRAM:
+                if (ast->val.prog.dcls != NULL)
+                        sym_table_from_ast(f, t, ast->val.prog.dcls);
+                if (ast->val.prog.stmts != NULL)
+                        sym_table_from_ast(f, t, ast->val.prog.stmts);
+                break;
+        case CON_STMTS:
+                sym_table_from_ast(f, t, ast->val.stmts.stmt);
+                if (ast->val.stmts.stmts != NULL)
+                        sym_table_from_ast(f, t, ast->val.stmts.stmts);
+                break;
+        case CON_READ:
+                if (!sym_defined(t, ast->val.readidval->val.idval))
+                        report_sym_error("undeclared identifier", ast->val.idval, ast->lineno);
+                break;
+        case CON_PRINT:
+                sym_table_from_ast(f, t, ast->val.printexp);
+                break;
+        case CON_DECL:
+        {
+                ASTNode *decl;
+                for (decl = ast; decl; decl=decl->val.decl.next) {
+                        if (sym_defined(t, decl->val.decl.id->val.idval)) {
                                 /* Multiple declarations of the same variable found */
                                 report_sym_error("multiple delcarations",
-                                                  ast->val.decl.id->val.idval,
-                                                  ast->lineno);
+                                                        decl->val.decl.id->val.idval,
+                                                        decl->lineno);
                         } else {
-                                put_sym(t, ast->val.decl.id->val.idval, ast->val.decl.type);
-                                fprintf(f, "%s: %s\n", ast->val.decl.id->val.idval, get_type(ast->val.decl.type));
+                                put_sym(t, decl->val.decl.id->val.idval, decl->val.decl.type);
+                                fprintf(f, "%s: %s\n", decl->val.decl.id->val.idval, get_type(decl->val.decl.type));
                         }
-                        break;
+                }
+                break;
+        }
+        case CON_ASSIGN:
+                if (!sym_defined(t, ast->val.assign.id->val.idval)) {
+                        /* Cannot assign into undeclared variable */
+                        report_sym_error("assignment of undeclared identifier",
+                                                ast->val.assign.id->val.idval,
+                                                ast->lineno);
+                }
+                break;
+        case CON_IF:
+                sym_table_from_ast(f, t, ast->val.ifbranch.cond);
+                if (ast->val.ifbranch.if_body != NULL)
+                        sym_table_from_ast(f, t, ast->val.ifbranch.if_body);
+                break;
 
-                case CON_ASSIGN:
-                        if (!sym_defined(t, ast->val.assign.id->val.idval)) {
-                                /* Cannot assign into undeclared variable */
-                                report_sym_error("assignment of undeclared identifier",
-                                                  ast->val.assign.id->val.idval,
-                                                  ast->lineno);
-                        }
-                        break;
-                case CON_IF:
-                        sym_table_from_ast(f, t, ast->val.ifbranch.cond);
-                        if (ast->val.ifbranch.if_body != NULL)
-                                sym_table_from_ast(f, t, ast->val.ifbranch.if_body);
-                        break;
+        case CON_IF_ELSE:
+                sym_table_from_ast(f, t, ast->val.ifelsebranch.cond);
+                if (ast->val.ifelsebranch.if_body != NULL)
+                        sym_table_from_ast(f, t, ast->val.ifelsebranch.if_body);
+                if (ast->val.ifelsebranch.else_body != NULL)
+                        sym_table_from_ast(f, t, ast->val.ifelsebranch.else_body);
+                break;
 
-                case CON_IF_ELSE:
-                        sym_table_from_ast(f, t, ast->val.ifelsebranch.cond);
-                        if (ast->val.ifelsebranch.if_body != NULL)
-                                sym_table_from_ast(f, t, ast->val.ifelsebranch.if_body);
-                        if (ast->val.ifelsebranch.else_body != NULL)
-                                sym_table_from_ast(f, t, ast->val.ifelsebranch.else_body);
-                        break;
+        case CON_WHILE:
+                sym_table_from_ast(f, t, ast->val.whilebranch.cond);
+                if (ast->val.whilebranch.while_body != NULL)
+                        sym_table_from_ast(f, t, ast->val.whilebranch.while_body);
+                break;
 
-                case CON_WHILE:
-                        sym_table_from_ast(f, t, ast->val.whilebranch.cond);
-                        if (ast->val.whilebranch.while_body != NULL)
-                                sym_table_from_ast(f, t, ast->val.whilebranch.while_body);
-                        break;
-
-                default:
-                        break;
+        default:
+                break;
         }
 }
 
@@ -177,7 +176,7 @@ void free_sym_table(SYM_TABLE *t)
         /*
         We currenly free the argument symbol table only as minilang does not have scopes.
         Variable can only be declared at the top-level and so we only have one hashtable.
-        If, in the future, scopes are implemented, remember to update this deallocator!!! 
+        If, in the future, scopes are implemented, remember to update this deallocator!!!
         */
         int i;
         for (i = 0; i < HASH_SIZE; i++)
