@@ -75,7 +75,7 @@ type    : TYPE_INT
         ;
 
 stmts   : stmt stmts 
-          { $$ = make_ast_node_stmts($1, $2, @1.first_line); }
+          { $$ = prepend_stmt($1, $2); }
         | %empty
           { $$ = NULL; }
         ;

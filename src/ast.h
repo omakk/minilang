@@ -6,7 +6,7 @@ enum ast_construct {
         CON_BOP_PLUS,  CON_BOP_MINUS, CON_BOP_MUL, CON_BOP_DIV,
         CON_UOP_MINUS, CON_IF,        CON_IF_ELSE, CON_WHILE,
         CON_READ,      CON_PRINT,     CON_DECL,    CON_ASSIGN,
-        CON_PROGRAM,   CON_STMTS
+        CON_PROGRAM
 };
 
 enum type {
@@ -20,26 +20,29 @@ typedef struct ASTNode {
         int lineno;
         enum ast_construct construct;
         union {
-               char     *idval;
-               int      intval;
-               float  floatval;
-               char    *strval;
+                char     *idval;
+                int      intval;
+                float  floatval;
+                char    *strval;
 
-               struct ASTNode *printexp;
-               struct ASTNode *minusuop;
-               struct ASTNode *readidval;
-
-               struct { struct ASTNode *id;   struct ASTNode *e;          } assign;
-               struct { struct ASTNode *stmt; struct ASTNode *stmts;      } stmts;
-               struct { struct ASTNode *dcls; struct ASTNode *stmts;      } prog;
-               struct { struct ASTNode *left; struct ASTNode *right;      } mulbop;
-               struct { struct ASTNode *left; struct ASTNode *right;      } divbop;
-               struct { struct ASTNode *left; struct ASTNode *right;      } plusbop;
-               struct { struct ASTNode *left; struct ASTNode *right;      } minusbop;
-               struct { struct ASTNode *cond; struct ASTNode *while_body; } whilebranch;
-               struct { struct ASTNode *cond; struct ASTNode *if_body;    } ifbranch;
-               struct { struct ASTNode *id;   enum type       type;    struct ASTNode *next;      } decl;
-               struct { struct ASTNode *cond; struct ASTNode *if_body; struct ASTNode *else_body; } ifelsebranch;
+                struct ASTNode *minusuop;
+                struct { struct ASTNode *left; struct ASTNode *right; } mulbop;
+                struct { struct ASTNode *left; struct ASTNode *right; } divbop;
+                struct { struct ASTNode *left; struct ASTNode *right; } plusbop;
+                struct { struct ASTNode *left; struct ASTNode *right; } minusbop;
+                struct { struct ASTNode *dcls; struct ASTNode *stmts; } prog;
+                struct { struct ASTNode *id;   enum type        type;    struct ASTNode *next; } decl;
+                struct {
+                        union {
+                                struct ASTNode *printexp;
+                                struct ASTNode *readidval;
+                                struct { struct ASTNode *cond; struct ASTNode *while_body; } whilebranch;
+                                struct { struct ASTNode *cond; struct ASTNode *if_body;    } ifbranch;
+                                struct { struct ASTNode *id; struct ASTNode *e;            } assign;
+                                struct { struct ASTNode *cond; struct ASTNode *if_body; struct ASTNode *else_body; } ifelsebranch;
+                        } stmtval;
+                        struct ASTNode *next;
+                } stmt;
         } val;
 } ASTNode;
 
@@ -53,7 +56,6 @@ ASTNode *make_ast_node_minusuop     ( ASTNode *e,                               
 ASTNode *make_ast_node_decl         ( char    *id,   enum type type,                        int lineno);
 ASTNode *make_ast_node_assign       ( char    *id,   ASTNode *e,                            int lineno);
 ASTNode *make_ast_node_prog         ( ASTNode *dcls, ASTNode *stmts,                        int lineno);
-ASTNode *make_ast_node_stmts        ( ASTNode *stmt, ASTNode *stmts,                        int lineno);
 ASTNode *make_ast_node_mulbop       ( ASTNode *l,    ASTNode *r,                            int lineno);
 ASTNode *make_ast_node_divbop       ( ASTNode *l,    ASTNode *r,                            int lineno);
 ASTNode *make_ast_node_plusbop      ( ASTNode *l,    ASTNode *r,                            int lineno);
@@ -62,6 +64,7 @@ ASTNode *make_ast_node_whilebranch  ( ASTNode *cond, ASTNode *while_body,       
 ASTNode *make_ast_node_ifbranch     ( ASTNode *cond, ASTNode *if_body,                      int lineno);
 ASTNode *make_ast_node_ifelsebranch ( ASTNode *cond, ASTNode *if_body, ASTNode *else_body,  int lineno);
 
-ASTNode *prepend_dcl(ASTNode *dcl, ASTNode *dcls);
+ASTNode *prepend_dcl  (ASTNode *dcl, ASTNode *dcls);
+ASTNode *prepend_stmt (ASTNode *stmt, ASTNode *stmts);
 
 #endif

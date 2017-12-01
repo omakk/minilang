@@ -110,17 +110,16 @@ void sym_table_from_ast(FILE *f, SYM_TABLE *t, ASTNode *ast)
                 if (ast->val.prog.stmts != NULL)
                         sym_table_from_ast(f, t, ast->val.prog.stmts);
                 break;
-        case CON_STMTS:
-                sym_table_from_ast(f, t, ast->val.stmts.stmt);
-                if (ast->val.stmts.stmts != NULL)
-                        sym_table_from_ast(f, t, ast->val.stmts.stmts);
-                break;
         case CON_READ:
-                if (!sym_defined(t, ast->val.readidval->val.idval))
+                if (!sym_defined(t, ast->val.stmt.stmtval.readidval->val.idval))
                         report_sym_error("undeclared identifier", ast->val.idval, ast->lineno);
+                if (ast->val.stmt.next)
+                        sym_table_from_ast(f, t, ast->val.stmt.next);
                 break;
         case CON_PRINT:
-                sym_table_from_ast(f, t, ast->val.printexp);
+                sym_table_from_ast(f, t, ast->val.stmt.stmtval.printexp);
+                if (ast->val.stmt.next)
+                        sym_table_from_ast(f, t, ast->val.stmt.next);
                 break;
         case CON_DECL:
         {
@@ -139,31 +138,39 @@ void sym_table_from_ast(FILE *f, SYM_TABLE *t, ASTNode *ast)
                 break;
         }
         case CON_ASSIGN:
-                if (!sym_defined(t, ast->val.assign.id->val.idval)) {
+                if (!sym_defined(t, ast->val.stmt.stmtval.assign.id->val.idval)) {
                         /* Cannot assign into undeclared variable */
                         report_sym_error("assignment of undeclared identifier",
-                                                ast->val.assign.id->val.idval,
-                                                ast->lineno);
+                                         ast->val.stmt.stmtval.assign.id->val.idval,
+                                         ast->lineno);
                 }
+                if (ast->val.stmt.next)
+                        sym_table_from_ast(f, t, ast->val.stmt.next);
                 break;
         case CON_IF:
-                sym_table_from_ast(f, t, ast->val.ifbranch.cond);
-                if (ast->val.ifbranch.if_body != NULL)
-                        sym_table_from_ast(f, t, ast->val.ifbranch.if_body);
+                sym_table_from_ast(f, t, ast->val.stmt.stmtval.ifbranch.cond);
+                if (ast->val.stmt.stmtval.ifbranch.if_body != NULL)
+                        sym_table_from_ast(f, t, ast->val.stmt.stmtval.ifbranch.if_body);
+                if (ast->val.stmt.next)
+                        sym_table_from_ast(f, t, ast->val.stmt.next);
                 break;
 
         case CON_IF_ELSE:
-                sym_table_from_ast(f, t, ast->val.ifelsebranch.cond);
-                if (ast->val.ifelsebranch.if_body != NULL)
-                        sym_table_from_ast(f, t, ast->val.ifelsebranch.if_body);
-                if (ast->val.ifelsebranch.else_body != NULL)
-                        sym_table_from_ast(f, t, ast->val.ifelsebranch.else_body);
+                sym_table_from_ast(f, t, ast->val.stmt.stmtval.ifelsebranch.cond);
+                if (ast->val.stmt.stmtval.ifelsebranch.if_body != NULL)
+                        sym_table_from_ast(f, t, ast->val.stmt.stmtval.ifelsebranch.if_body);
+                if (ast->val.stmt.stmtval.ifelsebranch.else_body != NULL)
+                        sym_table_from_ast(f, t, ast->val.stmt.stmtval.ifelsebranch.else_body);
+                if (ast->val.stmt.next)
+                        sym_table_from_ast(f, t, ast->val.stmt.next);
                 break;
 
         case CON_WHILE:
-                sym_table_from_ast(f, t, ast->val.whilebranch.cond);
-                if (ast->val.whilebranch.while_body != NULL)
-                        sym_table_from_ast(f, t, ast->val.whilebranch.while_body);
+                sym_table_from_ast(f, t, ast->val.stmt.stmtval.whilebranch.cond);
+                if (ast->val.stmt.stmtval.whilebranch.while_body != NULL)
+                        sym_table_from_ast(f, t, ast->val.stmt.stmtval.whilebranch.while_body);
+                if (ast->val.stmt.next)
+                        sym_table_from_ast(f, t, ast->val.stmt.next);
                 break;
 
         default:

@@ -92,24 +92,21 @@ void pretty_print(FILE *f, ASTNode *tree, int indent)
                         if (tree->val.prog.stmts)
                                 pretty_print(f, tree->val.prog.stmts, indent);
                         break;
-                case CON_STMTS:
-                        DBG(("CON_STMTS\n"));
-
-                        pretty_print(f, tree->val.stmts.stmt,  indent);
-                        if (tree->val.stmts.stmts)
-                                pretty_print(f, tree->val.stmts.stmts, indent);
-                        break;
                 case CON_READ:
                         DBG(("CON_READ(%s)\n", tree->val.readidval->val.idval));
 
-                        fprintf(f, "%*sread %s;\n", indent, "", tree->val.readidval->val.idval);
+                        fprintf(f, "%*sread %s;\n", indent, "", tree->val.stmt.stmtval.readidval->val.idval);
+                        if (tree->val.stmt.next)
+                                pretty_print(f, tree->val.stmt.next, indent);
                         break;
                 case CON_PRINT:
-                        DBG(("CON_PRINT(%s)\n", get_construct(tree->val.printexp->construct)));
+                        DBG(("CON_PRINT(%s)\n", get_construct(tree->val.stmt.stmtval.printexp->construct)));
 
                         fprintf(f, "%*sprint ", indent, "");
-                        pretty_print(f, tree->val.printexp, indent);
+                        pretty_print(f, tree->val.stmt.stmtval.printexp, indent);
                         fprintf(f, ";\n");
+                        if (tree->val.stmt.next)
+                                pretty_print(f, tree->val.stmt.next, indent);
                         break;
                 case CON_DECL:
                 {
@@ -121,47 +118,55 @@ void pretty_print(FILE *f, ASTNode *tree, int indent)
                         break;
                 }
                 case CON_ASSIGN:
-                        DBG(("CON_ASSIGN(%s, %s)\n"
-                                , tree->val.assign.id->val.idval
-                                , get_construct(tree->val.assign.e->construct)));
+                        DBG(("CON_ASSIGN(%s, %s)\n",
+                             tree->val.stmt.stmtval.assign.id->val.idval,
+                             get_construct(tree->val.stmt.stmtval.assign.e->construct)));
 
-                        fprintf(f, "%*s%s", indent, "", tree->val.assign.id->val.idval);
+                        fprintf(f, "%*s%s", indent, "", tree->val.stmt.stmtval.assign.id->val.idval);
                         fprintf(f, " = ");
-                        pretty_print(f, tree->val.assign.e, indent);
+                        pretty_print(f, tree->val.stmt.stmtval.assign.e, indent);
                         fprintf(f, ";\n");
+                        if (tree->val.stmt.next)
+                                pretty_print(f, tree->val.stmt.next, indent);
                         break;
                 case CON_IF:
                         DBG(("CON_IF\n"));
 
                         fprintf(f, "%*sif ", indent, "");
-                        pretty_print(f, tree->val.ifbranch.cond, indent);
+                        pretty_print(f, tree->val.stmt.stmtval.ifbranch.cond, indent);
                         fprintf(f, " then\n");
-                        if (tree->val.ifbranch.if_body)
-                                pretty_print(f, tree->val.ifbranch.if_body, indent + TAB_SIZE);
+                        if (tree->val.stmt.stmtval.ifbranch.if_body)
+                                pretty_print(f, tree->val.stmt.stmtval.ifbranch.if_body, indent + TAB_SIZE);
                         fprintf(f, "%*sendif\n", indent, "");
+                        if (tree->val.stmt.next)
+                                pretty_print(f, tree->val.stmt.next, indent);
                         break;
                 case CON_IF_ELSE:
                         DBG(("CON_IF_ELSE\n"));
 
                         fprintf(f, "%*sif ", indent, "");
-                        pretty_print(f, tree->val.ifelsebranch.cond, indent);
+                        pretty_print(f, tree->val.stmt.stmtval.ifelsebranch.cond, indent);
                         fprintf(f, " then\n");
-                        if (tree->val.ifelsebranch.if_body)
-                                pretty_print(f, tree->val.ifelsebranch.if_body,   indent + TAB_SIZE);
+                        if (tree->val.stmt.stmtval.ifelsebranch.if_body)
+                                pretty_print(f, tree->val.stmt.stmtval.ifelsebranch.if_body, indent + TAB_SIZE);
                         fprintf(f, "%*selse\n", indent, "");
-                        if (tree->val.ifelsebranch.else_body)
-                                pretty_print(f, tree->val.ifelsebranch.else_body, indent + TAB_SIZE);
+                        if (tree->val.stmt.stmtval.ifelsebranch.else_body)
+                                pretty_print(f, tree->val.stmt.stmtval.ifelsebranch.else_body, indent + TAB_SIZE);
                         fprintf(f, "%*sendif\n", indent, "");
+                        if (tree->val.stmt.next)
+                                pretty_print(f, tree->val.stmt.next, indent);
                         break;
                 case CON_WHILE:
                         DBG(("CON_WHILE\n"));
 
                         fprintf(f, "%*swhile ", indent, "");
-                        pretty_print(f, tree->val.whilebranch.cond, indent);
+                        pretty_print(f, tree->val.stmt.stmtval.whilebranch.cond, indent);
                         fprintf(f, " do\n");
-                        if (tree->val.whilebranch.while_body != NULL)
-                                pretty_print(f, tree->val.whilebranch.while_body, indent + TAB_SIZE);
+                        if (tree->val.stmt.stmtval.whilebranch.while_body != NULL)
+                                pretty_print(f, tree->val.stmt.stmtval.whilebranch.while_body, indent + TAB_SIZE);
                         fprintf(f, "%*sdone\n", indent, "");
+                        if(tree->val.stmt.next)
+                                pretty_print(f, tree->val.stmt.next, indent);
                         break;
                 default:
                         DBG(("No construct match\n"));
@@ -192,7 +197,6 @@ char *get_construct(enum ast_construct c)
                 case CON_DECL:      return "CON_DECL";
                 case CON_ASSIGN:    return "CON_ASSIGN";
                 case CON_PROGRAM:   return "CON_PROGRAM";
-                case CON_STMTS:     return "CON_STMTS";
                 default:            return "Invalid construct";
         }
 }

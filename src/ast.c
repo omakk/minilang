@@ -43,10 +43,11 @@ ASTNode *make_ast_node_ident (char * id, int lineno)
 
 ASTNode *make_ast_node_read (char *id, int lineno)
 {
-        ASTNode *node       = malloc(sizeof(ASTNode));
-        node->lineno        = lineno;
-        node->construct     = CON_READ;
-        node->val.readidval = make_ast_node_ident(id, lineno);
+        ASTNode *node                    = malloc(sizeof(ASTNode));
+        node->lineno                     = lineno;
+        node->construct                  = CON_READ;
+        node->val.stmt.stmtval.readidval = make_ast_node_ident(id, lineno);
+        node->val.stmt.next              = NULL;
         return node;
 }
 
@@ -79,10 +80,11 @@ ASTNode *make_ast_node_floatlit (float f, int lineno)
 
 ASTNode *make_ast_node_print (ASTNode *e, int lineno)
 {
-        ASTNode *node      = malloc(sizeof(ASTNode));
-        node->lineno       = lineno;
-        node->construct    = CON_PRINT;
-        node->val.printexp = e;
+        ASTNode *node                   = malloc(sizeof(ASTNode));
+        node->lineno                    = lineno;
+        node->construct                 = CON_PRINT;
+        node->val.stmt.stmtval.printexp = e;
+        node->val.stmt.next             = NULL;
         return node;
 }
 
@@ -108,11 +110,12 @@ ASTNode *make_ast_node_decl (char *id, enum type type, int lineno)
 
 ASTNode *make_ast_node_assign (char *id, ASTNode *e, int lineno)
 {
-        ASTNode *node        = malloc(sizeof(ASTNode));
-        node->lineno         = lineno;
-        node->construct      = CON_ASSIGN;
-        node->val.assign.id  = make_ast_node_ident(id, lineno);
-        node->val.assign.e   = e;
+        ASTNode *node                     = malloc(sizeof(ASTNode));
+        node->lineno                      = lineno;
+        node->construct                   = CON_ASSIGN;
+        node->val.stmt.stmtval.assign.id  = make_ast_node_ident(id, lineno);
+        node->val.stmt.stmtval.assign.e   = e;
+        node->val.stmt.next               = NULL;
         return node;
 }
 
@@ -123,16 +126,6 @@ ASTNode *make_ast_node_prog (ASTNode *dcls, ASTNode *stmts, int lineno)
         node->construct        = CON_PROGRAM;
         node->val.prog.dcls    = dcls;
         node->val.prog.stmts   = stmts;
-        return node;
-}
-
-ASTNode *make_ast_node_stmts (ASTNode *stmt, ASTNode *stmts, int lineno)
-{
-        ASTNode *node           = malloc(sizeof(ASTNode));
-        node->lineno            = lineno;
-        node->construct         = CON_STMTS;
-        node->val.stmts.stmt    = stmt;
-        node->val.stmts.stmts   = stmts;
         return node;
 }
 
@@ -181,32 +174,35 @@ ASTNode *make_ast_node_minusbop (ASTNode *l, ASTNode *r, int lineno)
 
 ASTNode *make_ast_node_whilebranch(ASTNode *cond, ASTNode *while_body, int lineno)
 {
-        ASTNode *node                    = malloc(sizeof(ASTNode));
-        node->lineno                     = lineno;
-        node->construct                  = CON_WHILE;
-        node->val.whilebranch.cond       = cond;
-        node->val.whilebranch.while_body = while_body;
+        ASTNode *node                                 = malloc(sizeof(ASTNode));
+        node->lineno                                  = lineno;
+        node->construct                               = CON_WHILE;
+        node->val.stmt.stmtval.whilebranch.cond       = cond;
+        node->val.stmt.stmtval.whilebranch.while_body = while_body;
+        node->val.stmt.next                           = NULL;
         return node;
 }
 
 ASTNode *make_ast_node_ifbranch (ASTNode *cond, ASTNode *if_body, int lineno)
 {
-        ASTNode *node              = malloc(sizeof(ASTNode));
-        node->lineno               = lineno;
-        node->construct            = CON_IF;
-        node->val.ifbranch.cond    = cond;
-        node->val.ifbranch.if_body = if_body;
+        ASTNode *node                           = malloc(sizeof(ASTNode));
+        node->lineno                            = lineno;
+        node->construct                         = CON_IF;
+        node->val.stmt.stmtval.ifbranch.cond    = cond;
+        node->val.stmt.stmtval.ifbranch.if_body = if_body;
+        node->val.stmt.next                     = NULL;
         return node;
 }
 
 ASTNode *make_ast_node_ifelsebranch (ASTNode *cond, ASTNode *if_body, ASTNode *else_body, int lineno)
 {
-        ASTNode *node                    = malloc(sizeof(ASTNode));
-        node->lineno                     = lineno;
-        node->construct                  = CON_IF_ELSE;
-        node->val.ifelsebranch.cond      = cond;
-        node->val.ifelsebranch.if_body   = if_body;
-        node->val.ifelsebranch.else_body = else_body;
+        ASTNode *node                                 = malloc(sizeof(ASTNode));
+        node->lineno                                  = lineno;
+        node->construct                               = CON_IF_ELSE;
+        node->val.stmt.stmtval.ifelsebranch.cond      = cond;
+        node->val.stmt.stmtval.ifelsebranch.if_body   = if_body;
+        node->val.stmt.stmtval.ifelsebranch.else_body = else_body;
+        node->val.stmt.next                           = NULL;
         return node;
 }
 
@@ -217,4 +213,13 @@ ASTNode *prepend_dcl(ASTNode *dcl, ASTNode *dcls)
         if (dcls)
                 dcl->val.decl.next = dcls;
         return dcl;
+}
+
+ASTNode *prepend_stmt(ASTNode *stmt, ASTNode *stmts)
+{
+        if (!stmt)
+                return NULL;
+        if (stmts)
+                stmt->val.stmt.next = stmts;
+        return stmt;
 }

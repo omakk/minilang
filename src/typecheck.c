@@ -166,18 +166,13 @@ void typecheck_prog(SYM_TABLE *t, ASTNode *ast)
                 if (ast->val.prog.stmts != NULL)
                         typecheck_prog(t, ast->val.prog.stmts);
                 break;
-        case CON_STMTS:
-                typecheck_prog(t, ast->val.stmts.stmt);
-                if (ast->val.stmts.stmts != NULL)
-                        typecheck_prog(t, ast->val.stmts.stmts);
-                break;
         case CON_ASSIGN:
         {
                 enum type type_lhs, type_rhs;
                 SYMBOL *s;
-                s = get_sym(t, ast->val.assign.id->val.idval);
+                s = get_sym(t, ast->val.stmt.stmtval.assign.id->val.idval);
                 type_lhs = s->type;
-                type_rhs = eval_exp_type(t, ast->val.assign.e);
+                type_rhs = eval_exp_type(t, ast->val.stmt.stmtval.assign.e);
 
                 switch (type_lhs)
                 {
@@ -190,51 +185,60 @@ void typecheck_prog(SYM_TABLE *t, ASTNode *ast)
                                 report_type_error("assignment type error", ast->lineno);
                         break;
                 }
+                if (ast->val.stmt.next)
+                        typecheck_prog(t, ast->val.stmt.next);
                 break;
         }
         case CON_READ:
+                if (ast->val.stmt.next)
+                        typecheck_prog(t, ast->val.stmt.next);
                 break;
         case CON_PRINT:
-                eval_exp_type(t, ast->val.printexp);
+                eval_exp_type(t, ast->val.stmt.stmtval.printexp);
+                if (ast->val.stmt.next)
+                        typecheck_prog(t, ast->val.stmt.next);
                 break;
         case CON_IF:
         {
                 enum type ifcond_type;
-                ifcond_type = eval_exp_type(t, ast->val.ifbranch.cond);
+                ifcond_type = eval_exp_type(t, ast->val.stmt.stmtval.ifbranch.cond);
 
                 if (ifcond_type != TINT)
                         report_type_error("type error: if condition must evaluate to \"int\"", ast->lineno);
-
-                if (ast->val.ifbranch.if_body != NULL)
-                        typecheck_prog(t, ast->val.ifbranch.if_body);
-
+                if (ast->val.stmt.stmtval.ifbranch.if_body != NULL)
+                        typecheck_prog(t, ast->val.stmt.stmtval.ifbranch.if_body);
+                if (ast->val.stmt.next)
+                        typecheck_prog(t, ast->val.stmt.next);
                 break;
         }
         case CON_IF_ELSE:
         {
                 enum type iftype_cond;
-                iftype_cond = eval_exp_type(t, ast->val.ifelsebranch.cond);
+                iftype_cond = eval_exp_type(t, ast->val.stmt.stmtval.ifelsebranch.cond);
 
                 if (iftype_cond != TINT)
                         report_type_error("type error: if condition must evaluate to \"int\"", ast->lineno);
 
-                if (ast->val.ifelsebranch.if_body != NULL)
-                        typecheck_prog(t, ast->val.ifelsebranch.if_body);
-                if (ast->val.ifelsebranch.else_body != NULL)
-                        typecheck_prog(t, ast->val.ifelsebranch.else_body);
-
+                if (ast->val.stmt.stmtval.ifelsebranch.if_body != NULL)
+                        typecheck_prog(t, ast->val.stmt.stmtval.ifelsebranch.if_body);
+                if (ast->val.stmt.stmtval.ifelsebranch.else_body != NULL)
+                        typecheck_prog(t, ast->val.stmt.stmtval.ifelsebranch.else_body);
+                if (ast->val.stmt.next)
+                        typecheck_prog(t, ast->val.stmt.next);
                 break;
         }
         case CON_WHILE:
         {
                 enum type whilecond_type;
-                whilecond_type = eval_exp_type(t, ast->val.whilebranch.cond);
+                whilecond_type = eval_exp_type(t, ast->val.stmt.stmtval.whilebranch.cond);
 
                 if (whilecond_type != TINT)
                         report_type_error("type error: while condition must evaluate to \"int\"", ast->lineno);
 
-                if (ast->val.whilebranch.while_body != NULL)
-                        typecheck_prog(t, ast->val.whilebranch.while_body);
+                if (ast->val.stmt.stmtval.whilebranch.while_body != NULL)
+                        typecheck_prog(t, ast->val.stmt.stmtval.whilebranch.while_body);
+                if (ast->val.stmt.next)
+                        typecheck_prog(t, ast->val.stmt.next);
                 break;
         }
         default:
