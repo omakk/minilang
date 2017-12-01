@@ -15,6 +15,8 @@ const char *get_type(enum type type)
         case TSTRING:
                 return "string";
                 break;
+        default:
+                break;
         }
 
         return NULL;
@@ -222,4 +224,95 @@ ASTNode *prepend_stmt(ASTNode *stmt, ASTNode *stmts)
         if (stmts)
                 stmt->val.stmt.next = stmts;
         return stmt;
+}
+
+void free_ast(ASTNode *root)
+{
+        if (!root)
+                return;
+        switch(root->construct)
+        {
+        case CON_IDENT:
+                free(root->val.idval);
+                free(root);
+                break;
+        case CON_FLOATLIT:
+                free(root);
+                break;
+        case CON_INTLIT:
+                free(root);
+                break;
+        case CON_STRLIT:
+                free(root->val.strval);
+                free(root);
+                break;
+        case CON_BOP_PLUS:
+                free_ast(root->val.plusbop.left);
+                free_ast(root->val.plusbop.right);
+                free(root);
+                break;
+        case CON_BOP_MINUS:
+                free_ast(root->val.minusbop.left);
+                free_ast(root->val.minusbop.right);
+                free(root);
+                break;
+        case CON_BOP_MUL:
+                free_ast(root->val.mulbop.left);
+                free_ast(root->val.mulbop.right);
+                free(root);
+                break;
+        case CON_BOP_DIV:
+                free_ast(root->val.divbop.left);
+                free_ast(root->val.divbop.right);
+                free(root);
+                break;
+        case CON_UOP_MINUS:
+                free_ast(root->val.minusuop);
+                free(root);
+                break;
+        case CON_IF:
+                free_ast(root->val.stmt.stmtval.ifbranch.cond);
+                free_ast(root->val.stmt.stmtval.ifbranch.if_body);
+                free_ast(root->val.stmt.next);
+                free(root);
+                break;
+        case CON_IF_ELSE:
+                free_ast(root->val.stmt.stmtval.ifelsebranch.cond);
+                free_ast(root->val.stmt.stmtval.ifelsebranch.if_body);
+                free_ast(root->val.stmt.stmtval.ifelsebranch.else_body);
+                free_ast(root->val.stmt.next);
+                free(root);
+                break;
+        case CON_WHILE:
+                free_ast(root->val.stmt.stmtval.whilebranch.cond);
+                free_ast(root->val.stmt.stmtval.whilebranch.while_body);
+                free_ast(root->val.stmt.next);
+                free(root);
+                break;
+        case CON_READ:
+                free_ast(root->val.stmt.stmtval.readidval);
+                free_ast(root->val.stmt.next);
+                free(root);
+                break;
+        case CON_PRINT:
+                free_ast(root->val.stmt.stmtval.printexp);
+                free_ast(root->val.stmt.next);
+                free(root);
+                break;
+        case CON_DECL:
+                free_ast(root->val.decl.next);
+                free(root);
+                break;
+        case CON_ASSIGN:
+                free_ast(root->val.stmt.stmtval.assign.id);
+                free_ast(root->val.stmt.stmtval.assign.e);
+                free_ast(root->val.stmt.next);
+                free(root);
+                break;
+        case CON_PROGRAM:
+                free_ast(root->val.prog.dcls);
+                free_ast(root->val.prog.stmts);
+                free(root);
+                break;
+        }
 }
