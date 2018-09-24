@@ -1,0 +1,38 @@
+### C ###
+
+# Object files
+*.o
+*.obj
+*.elf
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+
+# Debug files
+*.dSYM/
+
+### Test Output ###
+
+*.pretty.min
+*.symbol
+*.log
+
+### Bison/Flex ###
+
+# Generated Files
+y.tab.h
+y.tab.c
+lex.yy.c
