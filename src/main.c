@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <defer.h>
 #include <debug.h>
 
 #include "ast.h"
@@ -50,43 +51,39 @@ int main(int argc, const char *argv[])
 
         parse_res = yyparse();
         if (parse_res) {
-                free_sym_table(sym_table);
-                free_ast(ast);
                 exit(1);
         }
+        defer(free_sym_table(sym_table));
+        defer(free_ast(ast));
 
         pretty_out_fn = change_file_extension(argv[1], ".pretty.min");
-        sym_out_fn    = change_file_extension(argv[1], ".symbol");
+        defer(free(pretty_out_fn));
+
+        sym_out_fn = change_file_extension(argv[1], ".symbol");
+        defer(free(sym_out_fn));
 
         pretty_f = fopen(pretty_out_fn, "w");
+        defer(fclose(pretty_f));
+
         DBG(("Printing ast to %s...\n", pretty_out_fn));
         pretty_print(pretty_f, ast, 0);
-        free(pretty_out_fn);
-        fclose(pretty_f);
 
         sym_f = fopen(sym_out_fn, "w");
+        defer(fclose(sym_f));
+
         DBG(("Printing symbol table to %s...\n", sym_out_fn));
         make_sym_table(sym_f, ast);
-        free(sym_out_fn);
-        fclose(sym_f);
         if (sym_error) {
-                free_sym_table(sym_table);
-                free_ast(ast);
                 exit(1);
         }
 
         DBG(("Typechecking program"));
         typecheck_prog(sym_table, ast);
         if (type_error) {
-                free_sym_table(sym_table);
-                free_ast(ast);
                 exit(1);
         }
 
         printf("VALID\n");
-
-        free_sym_table(sym_table);
-        free_ast(ast);
 
         return 0;
 }

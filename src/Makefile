@@ -9,11 +9,19 @@ ifeq ($(DEBUG), 1)
 endif
 
 UNAME := $(shell uname)
+COMPILER := $(shell $(CC) -v 2>&1 | grep -E '(gcc|clang|LLVM) version' | grep -oE '(clang|gcc)')
 ifeq ($(UNAME), Linux)
 	LIBS = -lfl
+    ifeq ($(COMPILER),clang)
+		CFLAGS += -fblocks
+		LIBS += -lBlocksRuntime
+    endif
 endif
 ifeq ($(UNAME), Darwin)
 	LIBS = -ll
+    ifeq ($(COMPILER),clang)
+		CFLAGS += -fblocks
+    endif
 endif
 
 SRCS = typecheck.c symbol.c pretty.c ast.c y.tab.c lex.yy.c main.c

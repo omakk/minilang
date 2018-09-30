@@ -1,5 +1,6 @@
-export DEBUG ?= 0
-export TOPDIR=$(shell pwd)
+DEBUG ?= 0
+TOPDIR := $(shell pwd)
+export
 
 all:
 	$(MAKE) -C src
@@ -9,5 +10,5 @@ test:
 	./test.sh
 
 clean:
-	rm -f *.log *.pretty.min *.symbol.txt
+	rm -f *.log *.pretty.min *.symbol
 	$(MAKE) -C src clean
