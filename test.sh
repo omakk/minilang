@@ -11,13 +11,7 @@ echo "*****************************"
 echo "  Building compiler"
 echo "*****************************"
 
-if [ ! -f build.sh ]
-then
-	echo "ERROR: Missing build.sh script"
-	exit
-fi
-
-./build.sh
+make
 
 # 2. Run script checking
 #

@@ -1,8 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#include <debug.h>
+
 #include "ast.h"
-#include "debug.h"
 #include "pretty.h"
 #include "symbol.h"
 #include "typecheck.h"
@@ -14,25 +16,22 @@ extern int sym_error;
 extern int type_error;
 ASTNode *ast;
 
-char *change_file_extension (const char *s, const char *extension)
+char *change_file_extension (const char *path, const char *extension)
 {
-        char *dup, *fname, *res;
+        char *fname, *res;
         const char slash = '/';
 
-        dup = strdup(s);
-        fname = strrchr(dup, slash);
+        fname = strrchr(path, slash);
         if (fname != NULL) {
                 res = malloc(strlen(fname)+ strlen(extension) - 3); /* (3 = strlen(".min") - null byte) */
                 sscanf(fname, "/%[^.].min", res);
         } else {
-                res = malloc(strlen(dup)+ strlen(extension) - 3); /* (3 = strlen(".min") - null byte) */
-                sscanf(dup, "%[^.].min", res);
+                res = malloc(strlen(path)+ strlen(extension) - 3); /* (3 = strlen(".min") - null byte) */
+                sscanf(path, "%[^.].min", res);
         }
         
         strcat(res, extension);
        
-        free(dup);
-
         return res;
 }   
 
@@ -57,7 +56,7 @@ int main(int argc, const char *argv[])
         }
 
         pretty_out_fn = change_file_extension(argv[1], ".pretty.min");
-        sym_out_fn    = change_file_extension(argv[1], ".symbol.txt");
+        sym_out_fn    = change_file_extension(argv[1], ".symbol");
 
         pretty_f = fopen(pretty_out_fn, "w");
         DBG(("Printing ast to %s...\n", pretty_out_fn));

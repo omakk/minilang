@@ -1,5 +1,6 @@
+#include <debug.h>
+
 #include "pretty.h"
-#include "debug.h"
 
 #define TAB_SIZE 8
 
@@ -93,7 +94,7 @@ int pretty_print(FILE *f, ASTNode *tree, int indent)
                         pretty_print(f, tree->val.prog.stmts, indent);
                 break;
         case CON_READ:
-                DBG(("CON_READ(%s)\n", tree->val.readidval->val.idval));
+                DBG(("CON_READ(%s)\n", tree->val.stmt.stmtval.readidval->val.idval));
 
                 fprintf(f, "%*sread %s;\n", indent, "", tree->val.stmt.stmtval.readidval->val.idval);
                 if (tree->val.stmt.next)
